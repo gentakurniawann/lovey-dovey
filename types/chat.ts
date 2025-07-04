@@ -18,7 +18,6 @@ export type ScoredReaction = {
 };
 
 export type InteractionStep = {
-  id: string;
   type: "message" | "quiz" | "redirect";
   content?: string;
   quizId?: string; // connects to RELATIONSHIP_QUIZ
