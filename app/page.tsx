@@ -1,6 +1,20 @@
+"use client";
+
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { useRequireGuest, setChat } from "@/libs/auth";
+import { setCurrentStep } from "@/libs/stepManager";
 
 export default function Home() {
+  useRequireGuest();
+
+  // deps
+  async function redirectToChat() {
+    setCurrentStep(8);
+    setChat();
+    redirect("/chat");
+  }
+
   return (
     <div>
       <Image
@@ -41,12 +55,15 @@ export default function Home() {
           className="mb-[-420px]"
         />
         <h1 className="text-[140px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg] z-[2] relative">
-          Lorem
+          Hai
         </h1>
         <h1 className="text-[160px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg] mt-[-100px] z-[2] relative">
           Ipsum?
         </h1>
-        <button className="w-52 bg-pink-500 shadow-pink-300 shadow h-24 rounded-full hover:bg-pink-600 hover:scale-105 duration-100"></button>
+        <button
+          className="w-52 bg-pink-500 shadow-pink-300 shadow h-24 rounded-full hover:bg-pink-600 hover:scale-105 duration-100 cursor-pointer"
+          onClick={redirectToChat}
+        ></button>
       </div>
       <Image
         src="/images/pointer.png"
