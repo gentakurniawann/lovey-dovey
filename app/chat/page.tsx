@@ -1,5 +1,66 @@
-import React from "react";
+"use client";
+
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+import { useRequireAuth } from "@/libs/auth";
+import { getCurrentStep } from "@/libs/stepManager";
+import WelcomeAnimation from "@/public/animations/welcome.json";
+
+const Player = dynamic(() => import("lottie-react"), {
+  ssr: false,
+});
 
 export default function ChatPage() {
-  return <div>ChatPage</div>;
+  useRequireAuth();
+
+  const [step, setStep] = useState(8);
+
+  useEffect(() => {
+    setStep(getCurrentStep());
+  }, []);
+
+  return (
+    <div className="lg:p-[2.5%] grid gap-6 w-screen h-screen grid-rows-[auto_1fr] grid-cols-[2fr_1.2fr]">
+      {/* Header chat */}
+      <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary">
+        <article className="flex gap-2 items-center">
+          <img src="" alt="icon" />
+          <span className="font-poppins font-bold text-pink-500">Lovey</span>
+        </article>
+        <div className="flex items-center gap-2">
+          {[...Array(step)].map((_, index) => (
+            <Image
+              key={index}
+              src="/images/love-pix.svg"
+              alt={`love-pixel-${index}`}
+              width={36}
+              height={36}
+            />
+          ))}{" "}
+        </div>
+      </header>
+
+      {/* Display user's answer  */}
+      <main className="col-span-1 h-full bg-shadow-primary rounded-lg"></main>
+
+      {/* User's pick */}
+      <section className="col-span-1 h-full items-center bg-shadow-primary rounded-lg flex flex-col gap-2">
+        <Player
+          autoplay
+          loop
+          animationData={WelcomeAnimation}
+          style={{ height: "360px" }}
+        />
+        <span className="font-chango text-pink-500 text-[1.6rem] text-center">
+          Olaa! anyway so, <br /> who's your crush name?
+        </span>
+        <form action="">
+          <input type="text" name="ikan goreng" />
+          <button></button>
+        </form>
+      </section>
+    </div>
+  );
 }
