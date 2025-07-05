@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LoadingProvider } from "@/providers/loading";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased bg-pink-200 h-screen overflow-x-hidden`}>
-        {children}
+        <LoadingProvider>{children}</LoadingProvider>
       </body>
     </html>
   );
