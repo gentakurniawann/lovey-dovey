@@ -17,6 +17,18 @@ export const clearChat = () => {
   Cookies.remove("chat");
 };
 
+export const setCrushName = (user: string) => {
+  Cookies.set("crushName", user, { expires: 7 });
+};
+
+export const getCrushName = (): string => {
+  return Cookies.get("crushName") || "";
+};
+
+export const clearCrushName = () => {
+  Cookies.remove("crushName");
+};
+
 // Authorization functions (client-side redirect hooks)
 export const useRequireAuth = () => {
   const router = useRouter();

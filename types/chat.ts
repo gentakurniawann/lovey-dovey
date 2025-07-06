@@ -1,13 +1,15 @@
-type QuizOption = {
-  value: 1 | 2 | 3 | 4;
+export interface QuizOption {
   text: string;
-};
+  value: number;
+}
 
-export type QuizQuestion = {
+export interface QuizQuestion {
   id: string;
   question: string;
   options: QuizOption[];
-};
+}
+
+export type ReactionDataset = Record<number | "default", string[]>;
 
 export type ReactionType = "text" | "image" | "combo";
 
