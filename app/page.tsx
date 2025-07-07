@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { useRequireGuest, setChat } from "@/libs/auth";
-import { setCurrentStep } from "@/libs/stepManager";
+import { useRequireGuest, setAuth } from "@/libs/authManager";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Home() {
@@ -14,8 +13,7 @@ export default function Home() {
 
   // deps
   async function redirectToChat() {
-    setCurrentStep(8);
-    setChat();
+    setAuth();
     redirect("/chat");
   }
 
@@ -64,10 +62,10 @@ export default function Home() {
                 className="mb-[-360px] max-[770]:w-[64vw] max-[770]:mb-[-44vw]"
               />
               <h1 className="text-[100px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg] z-[2] relative">
-                Hai
+                Into
               </h1>
-              <h1 className="text-[120px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg] mt-[-100px] z-[2] relative">
-                Ipsum?
+              <h1 className="text-[120px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg]  -mt-[75px] z-[2] relative">
+                You?
               </h1>
               <button
                 className="w-40 bg-pink-500 shadow-pink-300 shadow h-16 rounded-full hover:bg-pink-600 hover:scale-105 duration-100 cursor-pointer"

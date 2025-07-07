@@ -3,30 +3,32 @@
 import Cookies from "js-cookie";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { COOKIE_KEYS } from "@/constants/authConst";
 
-// Cookie setters
-export const setChat = () => {
-  Cookies.set("chat", "true", { expires: 7 }); // expires in 7 days
+// Cookie for authorization
+export const setAuth = () => {
+  Cookies.set(COOKIE_KEYS.AUTH, "true", { expires: 7 });
 };
 
-export const getChat = (): boolean => {
-  return Cookies.get("chat") === "true";
+export const getAuth = (): boolean => {
+  return Cookies.get(COOKIE_KEYS.AUTH) === "true";
 };
 
-export const clearChat = () => {
-  Cookies.remove("chat");
+export const clearSession = () => {
+  Cookies.remove(COOKIE_KEYS.AUTH);
 };
 
+// Cookie user's crush name
 export const setCrushName = (user: string) => {
-  Cookies.set("crushName", user, { expires: 7 });
+  Cookies.set(COOKIE_KEYS.USERNAME, user, { expires: 7 });
 };
 
 export const getCrushName = (): string => {
-  return Cookies.get("crushName") || "";
+  return Cookies.get(COOKIE_KEYS.USERNAME) || "";
 };
 
 export const clearCrushName = () => {
-  Cookies.remove("crushName");
+  Cookies.remove(COOKIE_KEYS.USERNAME);
 };
 
 // Authorization functions (client-side redirect hooks)
@@ -35,7 +37,7 @@ export const useRequireAuth = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!getChat() && pathname !== "/") {
+    if (!getAuth() && pathname !== "/") {
       router.push("/");
     }
   }, [pathname]);
@@ -46,7 +48,7 @@ export const useRequireGuest = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (getChat() && pathname !== "/chat") {
+    if (getAuth() && pathname !== "/chat") {
       router.push("/chat");
     }
   }, [pathname]);

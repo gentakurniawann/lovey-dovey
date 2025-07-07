@@ -25,3 +25,20 @@ export type InteractionStep = {
   quizId?: string; // connects to RELATIONSHIP_QUIZ
   redirectTo?: string; // for final step
 };
+
+// Types and Interfaces
+export interface quizConfig {
+  totalQuiz: number;
+}
+
+export interface StepResult {
+  success: boolean;
+  step: number;
+  error?: string;
+}
+
+export interface StepValidation {
+  isValid: boolean;
+  currentStep: number;
+  requiredStep: number;
+}

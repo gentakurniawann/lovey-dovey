@@ -1,4 +1,4 @@
-import { QuizQuestion } from "@/types/chat";
+import { QuizQuestion } from "@/types/quiz";
 
 export const RELATIONSHIP_QUIZ: QuizQuestion[] = [
   {
@@ -141,5 +141,18 @@ export const RELATIONSHIP_QUIZ: QuizQuestion[] = [
         value: 1,
       },
     ],
+  },
+];
+
+export const WELCOME = [
+  {
+    id: "welcome",
+    message:
+      "Hey, I’m Lovey 💖 I’m here to help you find out if your crush likes you back.",
+  },
+  {
+    id: "start-chat",
+    message:
+      "Starting the quiz. Answer a few questions to find out the truth 💬",
   },
 ];

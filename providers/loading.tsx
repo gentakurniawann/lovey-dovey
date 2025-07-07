@@ -2,9 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { getChat } from "@/libs/auth";
-import LoadingAnimation from "@/public/animations/love.json";
 import Image from "next/image";
+import { getAuth } from "@/libs/authManager";
 
 interface LoadingContextType {
   isLoading: boolean;
@@ -45,7 +44,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({
       // Small delay to ensure cookies are ready
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const hasAuth = getChat();
+      const hasAuth = getAuth();
       const isOnChat = pathname === "/chat";
       const isOnHome = pathname === "/";
 

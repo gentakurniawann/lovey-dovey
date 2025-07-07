@@ -1,4 +1,4 @@
-import { ReactionDataset } from "@/types/chat";
+import { ReactionDataset } from "@/types/quiz";
 
 export const getMemeByScore = (
   score: number,

@@ -1,4 +1,4 @@
-import { ScoredReaction } from "@/types/chat";
+import { ScoredReaction } from "@/types/quiz";
 
 export const REACTIONS_BY_SCORE: Record<1 | 2 | 3 | 4, ScoredReaction[]> = {
   1: [
