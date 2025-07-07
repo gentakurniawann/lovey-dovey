@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCrushName, getCrushName, useRequireAuth } from "@/libs/authManager";
-import { getCurrentStep } from "@/libs/quizManager";
 import WelcomeAnimation from "@/public/animations/welcome.json";
 import { RELATIONSHIP_QUIZ, WELCOME } from "@/constants/chatDatasets";
 import { REACTIONS_BY_SCORE } from "@/constants/memeDatasets";

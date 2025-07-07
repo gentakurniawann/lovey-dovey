@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { COOKIE_KEYS } from "@/constants/authConst";
+import { COOKIE_KEYS as COOKIE_STEP } from "@/constants/stepConst";
 
 // Cookie for authorization
 export const setAuth = () => {
@@ -16,6 +17,8 @@ export const getAuth = (): boolean => {
 
 export const clearSession = () => {
   Cookies.remove(COOKIE_KEYS.AUTH);
+  Cookies.remove(COOKIE_KEYS.USERNAME);
+  Cookies.remove(COOKIE_STEP.STEPPER);
 };
 
 // Cookie user's crush name
