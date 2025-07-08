@@ -6,13 +6,8 @@ import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { setCrushName, getCrushName, useRequireAuth } from "@/libs/authManager";
-import { getCurrentStep } from "@/libs/quizManager";
+import { useRequireAuth } from "@/libs/authManager";
 import WelcomeAnimation from "@/public/animations/welcome.json";
-import { RELATIONSHIP_QUIZ, WELCOME } from "@/constants/chatDatasets";
-import { REACTIONS_BY_SCORE } from "@/constants/memeDatasets";
-import { getRandomQuestions } from "@/utils/getRandomQuestions";
-import { getMemeByScore } from "@/utils/getMemeByScore";
 import { QuizQuestion } from "@/types/quiz";
 import {
   Form,
@@ -52,7 +47,6 @@ export default function ChatPage() {
   });
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setCrushName(data.crushName);
     setUsername(data.crushName);
     setTimeout(() => {
       setChatStep(1);
@@ -141,3 +135,99 @@ export default function ChatPage() {
     </section>
   );
 }
+
+// "use client"
+
+// import Image from "next/image";
+// import React from "react";
+// import dynamic from "next/dynamic";
+// import { useForm } from "react-hook-form";
+// import { z } from "zod";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { QuizQuestion } from "@/types/quiz";
+// import WelcomeAnimation from "@/public/animations/welcome.json";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+
+// const Player = dynamic(() => import("lottie-react"), { ssr: false });
+
+// const FormSchema = z.object({
+//   crushName: z.string().min(2, {
+//     message: "Name must be at least 2 characters.",
+//   }),
+// });
+
+// type Props = {
+//   phase: "welcome" | "quiz" | "done";
+//   currentQuestion?: QuizQuestion;
+//   onSubmitName: (name: string) => void;
+//   onAnswer: (value: number, text: string) => void;
+// };
+
+// export default function ChatInput({
+//   phase,
+//   currentQuestion,
+//   onSubmitName,
+//   onAnswer,
+// }: Props) {
+//   const form = useForm<z.infer<typeof FormSchema>>({
+//     resolver: zodResolver(FormSchema),
+//     defaultValues: { crushName: "" },
+//   });
+
+//   if (phase === "welcome") {
+//     return (
+//       <section className="col-span-1 h-full bg-shadow-primary rounded-lg overflow-auto break-words">
+//         <div className="items-center flex flex-col gap-2">
+//           <Player
+//             autoplay
+//             loop
+//             animationData={WelcomeAnimation}
+//             style={{ height: "360px" }}
+//           />
+//           <span className="font-chango -mt-12 leading-8 mb-6 text-pink-400 text-[1.6rem] text-center">
+//             Olaa! anyway so, <br /> who's your crush name?
+//           </span>
+//           <form
+//             onSubmit={form.handleSubmit((data) => onSubmitName(data.crushName))}
+//             className="flex gap-2 px-6 py-4"
+//           >
+//             <Input
+//               {...form.register("crushName")}
+//               placeholder="Type their name..."
+//             />
+//             <Button type="submit">Send</Button>
+//           </form>
+//         </div>
+//       </section>
+//     );
+//   }
+
+//   if (phase === "quiz" && currentQuestion) {
+//     return (
+//       <section className="col-span-1 bg-shadow-primary rounded-lg p-6">
+//         <div className="flex flex-col gap-4">
+//           {currentQuestion.options.map((opt, idx) => (
+//             <Button
+//               key={idx}
+//               onClick={() => onAnswer(opt.value, opt.text)}
+//               className="bg-pink-300 text-white hover:bg-pink-400"
+//             >
+//               {opt.text}
+//             </Button>
+//           ))}
+//         </div>
+//       </section>
+//     );
+//   }
+
+//   if (phase === "done") {
+//     return (
+//       <section className="text-center text-gray-400 py-6 text-sm">
+//         ✨ Done! Thanks for playing.
+//       </section>
+//     );
+//   }
+
+//   return null;
+// }

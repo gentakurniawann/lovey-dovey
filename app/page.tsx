@@ -4,8 +4,6 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useRequireGuest, setAuth } from "@/libs/authManager";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { setCurrStep } from "@/libs/stepManager";
-import { QUIZ_STEPPER } from "@/constants/stepConst";
 
 export default function Home() {
   // variables
@@ -16,7 +14,6 @@ export default function Home() {
   // deps
   async function redirectToChat() {
     setAuth();
-    setCurrStep(QUIZ_STEPPER.WELCOME);
     redirect("/chat");
   }
 

@@ -1,1 +1,1 @@
-export type QuizPhase = "welcome" | "start" | "in_progress" | "result";
+export type QuizPhase = "welcome" | "start_quiz" | "questions" | "result";
