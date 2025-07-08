@@ -8,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRequireAuth } from "@/libs/authManager";
 import WelcomeAnimation from "@/public/animations/welcome.json";
-import { QuizQuestion } from "@/types/quiz";
+// import { QuizQuestion } from "@/types/quiz";
 import {
   Form,
   FormControl,
@@ -36,7 +36,7 @@ export default function ChatPage() {
   const [typing, setTyping] = useState(false);
   const [typedMessage, setTypedMessage] = useState("");
   const [username, setUsername] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
@@ -102,20 +102,6 @@ export default function ChatPage() {
         <div className="items-center flex flex-col gap-6 p-8 text-center">
           {!isFinished ? (
             <>
-              <h2 className="font-chango text-2xl text-pink-400">
-                {questions[currentIndex]?.question}
-              </h2>
-              <div className="flex flex-col gap-4">
-                {questions[currentIndex]?.options.map((opt, idx) => (
-                  <Button
-                    key={idx}
-                    onClick={() => handleAnswer(opt.value)}
-                    className="bg-pink-300 text-white hover:bg-pink-400"
-                  >
-                    {opt.text}
-                  </Button>
-                ))}
-              </div>
             </>
           ) : (
             <>

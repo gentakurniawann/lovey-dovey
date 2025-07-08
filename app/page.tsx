@@ -4,6 +4,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useRequireGuest, setAuth } from "@/libs/authManager";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { saveChatState } from "@/libs/chatManager";
 
 export default function Home() {
   // variables
@@ -14,6 +15,14 @@ export default function Home() {
   // deps
   async function redirectToChat() {
     setAuth();
+    saveChatState({
+      phase: "welcome",
+      totalQuestions: 8,
+      currentQuestion: 0,
+      answers: [],
+      crushName: "",
+      totalScore: 0,
+    });
     redirect("/chat");
   }
 

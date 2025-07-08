@@ -6,7 +6,7 @@ import Interaction from "@/components/chat/interaction";
 import { useEffect, useRef, useState } from "react";
 import ChatMessages from "@/components/chat/chat";
 import z from "zod";
-import { loadQuizState, saveQuizState } from "@/libs/chatManager";
+import { saveChatState, loadChatState } from "@/libs/chatManager";
 import { ChatMessage, QuizPhase, QuizReaction, QuizState } from "@/types/chat";
 import { calculateResult, delay, getRandomReaction } from "@/utils/randomQuest";
 import { QUIZ_DATA } from "@/constants/chatConst";
@@ -16,11 +16,19 @@ import { Input } from "@/components/ui/input";
 import { ChatBubble } from "@/components/chat/chatBubble";
 import { TypingIndicator } from "@/components/chat/typingIndicator";
 import { ReactionBubble } from "@/components/chat/reactionBubble";
+import { useForm } from "react-hook-form";
+import { TextInput } from "@/components/chat/textInput";
+
+type FormValues = {
+  username: string;
+};
 
 export default function ChatPage() {
   useRequireAuth();
 
-  const [state, setState] = useState<QuizState>(() => loadQuizState());
+  const { register, handleSubmit } = useForm();
+
+  const [state, setState] = useState<QuizState>(() => loadChatState());
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -29,14 +37,14 @@ export default function ChatPage() {
   const [currentReaction, setCurrentReaction] = useState<QuizReaction | null>(
     null
   );
+  const [username, setUsername] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageIdRef = useRef(0);
   const hasInitializedRef = useRef(false);
 
   useEffect(() => {
-    saveQuizState(state);
-    console.log(state, " ini state");
+    saveChatState(state);
   }, [state]);
 
   const scrollToBottom = () => {
@@ -61,7 +69,7 @@ export default function ChatPage() {
   const updateState = (updates: Partial<QuizState>) => {
     setState((prev) => {
       const newState = { ...prev, ...updates };
-      saveQuizState(newState);
+      saveChatState(newState);
       return newState;
     });
   };
@@ -187,9 +195,10 @@ export default function ChatPage() {
       answers: [],
       crushName: "",
       totalScore: 0,
+      totalQuestions: 8,
     };
     setState(defaultState);
-    saveQuizState(defaultState);
+    saveChatState(defaultState);
     setMessages([]);
     setInputValue("");
     setShowOptions(false);
@@ -208,8 +217,9 @@ export default function ChatPage() {
   const renderInput = () => {
     if (state.phase === "welcome" || state.phase === "start_quiz") {
       return (
-        <Input
+        <TextInput
           value={inputValue}
+          onChange={setInputValue}
           onSubmit={handleNameSubmit}
           placeholder="Type their name..."
         />
@@ -260,43 +270,38 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="lg:p-[2.5%] grid w-screen h-screen grid-rows-[auto_1fr] grid-cols-[1fr_0.6fr] gap-6 overflow-hidden">
-      <Header />
-      <Chat />
-      <Interaction />
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-pink-400 to-pink-600 p-4 text-white">
+        <div className="flex items-center space-x-2">
+          <Heart className="text-pink-100" size={24} />
+          <h1 className="text-xl font-bold">Lovey</h1>
+          <span className="text-sm text-pink-100">• Crush Analyzer</span>
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="h-96 overflow-y-auto p-4 bg-pink-50">
+        {messages.map((message) => (
+          <ChatBubble
+            key={message.id}
+            message={message}
+            isBot={message.type === "bot"}
+          />
+        ))}
+
+        {isTyping && <TypingIndicator />}
+        {currentReaction && <ReactionBubble reaction={currentReaction} />}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 bg-white border-t">
+        {renderOptions()}
+        {renderInput()}
+        {renderRestartButton()}
+      </div>
     </div>
-    // <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-    //   {/* Header */}
-    //   <div className="bg-gradient-to-r from-pink-400 to-pink-600 p-4 text-white">
-    //     <div className="flex items-center space-x-2">
-    //       <Heart className="text-pink-100" size={24} />
-    //       <h1 className="text-xl font-bold">Lovey</h1>
-    //       <span className="text-sm text-pink-100">• Crush Analyzer</span>
-    //     </div>
-    //   </div>
-
-    //   {/* Chat Area */}
-    //   <div className="h-96 overflow-y-auto p-4 bg-pink-50">
-    //     {messages.map((message) => (
-    //       <ChatBubble
-    //         key={message.id}
-    //         message={message}
-    //         isBot={message.type === "bot"}
-    //       />
-    //     ))}
-
-    //     {isTyping && <TypingIndicator />}
-    //     {currentReaction && <ReactionBubble reaction={currentReaction} />}
-
-    //     <div ref={messagesEndRef} />
-    //   </div>
-
-    //   {/* Input Area */}
-    //   <div className="p-4 bg-white border-t">
-    //     {renderOptions()}
-    //     {renderInput()}
-    //     {renderRestartButton()}
-    //   </div>
-    // </div>
   );
 }

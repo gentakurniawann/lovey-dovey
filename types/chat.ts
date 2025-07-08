@@ -10,6 +10,7 @@ export interface ChatMessage {
 
 
 export interface QuizState {
+  totalQuestions: number
   phase: QuizPhase;
   currentQuestion: number;
   answers: number[];
