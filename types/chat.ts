@@ -7,6 +7,7 @@ export interface ChatMessage {
   type: "bot" | "user";
   message: string;
   timestamp: number;
+  reaction?: QuizReaction; // Add this field
 }
 
 export interface QuizState {

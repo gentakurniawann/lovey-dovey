@@ -17,7 +17,7 @@ export default function Home() {
     setAuth();
     saveChatState({
       phase: "welcome",
-      phaseProgress: "not_started",
+      phaseProgress: 'not_started',
       totalQuestions: 8,
       currentQuestion: 0,
       answers: [],

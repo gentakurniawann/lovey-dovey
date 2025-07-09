@@ -38,9 +38,6 @@ export default function ChatPage() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [currentReaction, setCurrentReaction] = useState<QuizReaction | null>(
-    null
-  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageIdRef = useRef(0);
@@ -55,7 +52,12 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Add a slight delay to ensure ReactionBubble gets rendered
+    const timeout = setTimeout(() => {
+      scrollToBottom();
+    }, 100); // short enough to wait for ReactionBubble render
+
+    return () => clearTimeout(timeout);
   }, [messages, isTyping]);
 
   // 🎯 SIMPLE RELOAD LOGIC
@@ -131,22 +133,39 @@ export default function ChatPage() {
     setState((prev) => {
       const newState = { ...prev, ...updates };
       saveChatState(newState);
+
+      // If phase just completed, save current messages to history
+      if (updates.phaseProgress === "complete") {
+        setMessages((currentMessages) => {
+          saveChatHistory(currentMessages);
+          return currentMessages;
+        });
+      }
+
       return newState;
     });
   };
 
-  const addMessage = (message: string, type: "bot" | "user") => {
+  const addMessage = (
+    message: string,
+    type: "bot" | "user",
+    reaction?: QuizReaction
+  ) => {
     const newMessage: ChatMessage = {
       id: `msg_${messageIdRef.current++}`,
       type,
       message,
       timestamp: Date.now(),
+      reaction: reaction || undefined, // Make sure it's null if no reaction
     };
+
+    console.log(newMessage, "ini new meessage");
 
     setMessages((prev) => {
       const updated = [...prev, newMessage];
-      // Only save to history if phase is complete OR if it's questions phase
-      if (state.phaseProgress === "complete" || state.phase === "questions") {
+
+      // Save to history immediately for questions phase and when phase is complete
+      if (state.phase === "questions" || state.phaseProgress === "complete") {
         saveChatHistory(updated);
       }
 
@@ -237,10 +256,10 @@ export default function ChatPage() {
     setIsTyping(false);
 
     const reaction = getRandomReaction(option.value);
-    setCurrentReaction(reaction);
+    await addReaction(reaction);
 
+    // Add delay for pacing
     await delay(2000);
-    setCurrentReaction(null);
 
     const isLastQuestion = nextQuestion >= QUIZ_DATA.questions.length;
 
@@ -251,6 +270,37 @@ export default function ChatPage() {
       updateState({ phaseProgress: "complete" });
       await delay(1000);
       showResults(newScore);
+    }
+  };
+
+  const addReaction = async (reaction: {
+    type: "text" | "meme" | "both";
+    text?: string;
+    memeUrl?: string;
+    memeAlt?: string;
+  }) => {
+    if (reaction.type === "both") {
+      // First, add the text reaction
+      if (reaction.text) {
+        addMessage("", "bot", {
+          type: "text",
+          text: reaction.text,
+        });
+      }
+
+      await delay(500); // slight gap between text and meme
+
+      // Then add the meme reaction
+      if (reaction.memeUrl) {
+        addMessage("", "bot", {
+          type: "meme",
+          memeUrl: reaction.memeUrl,
+          memeAlt: reaction.memeAlt,
+        });
+      }
+    } else {
+      // For single type reactions, just pass the reaction as-is
+      addMessage("", "bot", reaction);
     }
   };
 
@@ -286,7 +336,6 @@ export default function ChatPage() {
     saveChatHistory([]);
     setInputValue("");
     setShowOptions(false);
-    setCurrentReaction(null);
     messageIdRef.current = 0;
 
     setTimeout(() => {
@@ -326,7 +375,7 @@ export default function ChatPage() {
       const currentQuestion = QUIZ_DATA.questions[state.currentQuestion];
       return (
         <div className="mb-4">
-          {currentQuestion.options.map((option, index) => (
+          {currentQuestion?.options?.map((option, index) => (
             <OptionButton
               key={index}
               option={option}
@@ -383,15 +432,15 @@ export default function ChatPage() {
       </header>
       <main className="col-span-1 h-full bg-shadow-primary rounded-lg pl-6 pr-8 py-8 flex flex-col gap-4 overflow-y-auto">
         {messages.map((message) => (
-          <ChatBubble
-            key={message.id}
-            message={message}
-            isBot={message.type === "bot"}
-          />
+          <div key={message.id}>
+            <ChatBubble message={message} isBot={message.type === "bot"} />
+            {/* Render ReactionBubble if this message has a reaction */}
+            {message.reaction && <ReactionBubble reaction={message.reaction} />}
+          </div>
         ))}
 
         {isTyping && <TypingIndicator />}
-        {currentReaction && <ReactionBubble reaction={currentReaction} />}
+        {/* Remove this line: {currentReaction && <ReactionBubble reaction={currentReaction} />} */}
         <div ref={messagesEndRef} />
       </main>
       <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words">
@@ -402,53 +451,3 @@ export default function ChatPage() {
     </div>
   );
 }
-
-// const initWelcome = async () => {
-//   updateState({ phase: "welcome", phaseProgress: "in_progress" });
-
-//   await delay(1000);
-//   await addBotMessages(QUIZ_DATA.botMessages.welcome);
-
-//   // ✅ mark complete AFTER all welcome messages are delivered
-//   updateState({ phaseProgress: "complete" });
-// };
-
-// const handleNameSubmit = async () => {
-//   if (!inputValue.trim()) return;
-
-//   const name = inputValue.trim();
-//   addMessage(name, "user");
-//   setInputValue("");
-
-//   updateState({ crushName: name, phase: "start_quiz" });
-
-//   await delay(1000);
-//   await addBotMessages(QUIZ_DATA.botMessages.afterName(name));
-
-//   await delay(1000);
-//   startQuiz();
-// };
-
-// const addMessage = (message: string, type: "bot" | "user") => {
-//   const newMessage: ChatMessage = {
-//     id: `msg_${messageIdRef.current++}`,
-//     type,
-//     message,
-//     timestamp: Date.now(),
-//   };
-
-//   setMessages((prev) => {
-//     const updated = [...prev, newMessage];
-
-//     const shouldSave =
-//       state.phase === "questions" || state.phaseProgress === "complete";
-
-//     if (shouldSave) {
-//       saveChatHistory(updated);
-//     }
-
-//     return updated;
-//   });
-
-//   return newMessage;
-// };

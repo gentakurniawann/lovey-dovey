@@ -176,12 +176,12 @@ export const QUIZ_DATA: QuizData = {
   questionReactions: {
     4: [
       // High score reactions
-      { type: "text", text: "Soulmate energy! 🔥" },
-      {
-        type: "meme",
-        memeUrl: "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif",
-        memeAlt: "Heart eyes",
-      },
+      // { type: "text", text: "Soulmate energy! 🔥" },
+      // {
+      //   type: "meme",
+      //   memeUrl: "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif",
+      //   memeAlt: "Heart eyes",
+      // },
       {
         type: "both",
         text: "You two are PERFECT together!",
@@ -191,12 +191,12 @@ export const QUIZ_DATA: QuizData = {
     ],
     3: [
       // Medium-high score reactions
-      { type: "text", text: "Ooh, looking promising! 😊" },
-      {
-        type: "meme",
-        memeUrl: "https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif",
-        memeAlt: "Thinking face",
-      },
+      // { type: "text", text: "Ooh, looking promising! 😊" },
+      // {
+      //   type: "meme",
+      //   memeUrl: "https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif",
+      //   memeAlt: "Thinking face",
+      // },
       {
         type: "both",
         text: "This could be something special!",
@@ -205,12 +205,12 @@ export const QUIZ_DATA: QuizData = {
       },
     ],
     2: [
-      { type: "text", text: "Hmm... interesting choice 🤔" },
-      {
-        type: "meme",
-        memeUrl: "https://media.giphy.com/media/a5viI92PAF89q/giphy.gif",
-        memeAlt: "Awkward",
-      },
+      // { type: "text", text: "Hmm... interesting choice 🤔" },
+      // {
+      //   type: "meme",
+      //   memeUrl: "https://media.giphy.com/media/a5viI92PAF89q/giphy.gif",
+      //   memeAlt: "Awkward",
+      // },
       {
         type: "both",
         text: "Well, that's... something",
@@ -220,12 +220,12 @@ export const QUIZ_DATA: QuizData = {
     ],
     1: [
       // Low score reactions
-      { type: "text", text: "Oh honey... 😬" },
-      {
-        type: "meme",
-        memeUrl: "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
-        memeAlt: "Disappointed",
-      },
+      // { type: "text", text: "Oh honey... 😬" },
+      // {
+      //   type: "meme",
+      //   memeUrl: "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
+      //   memeAlt: "Disappointed",
+      // },
       {
         type: "both",
         text: "Yikes! Red flag alert!",
