@@ -19,6 +19,11 @@ import { TextInput } from "@/components/chat/textInput";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import WelcomeAnimation from "@/public/animations/welcome.json";
+import { usePreventReload } from "@/components/chat/preventLoading";
+import { nanoid } from "nanoid";
+import { CalculatingModal } from "@/components/chat/calcResult";
+import router from "next/router";
+import { redirect } from "next/navigation";
 
 // Dynamic import for Lottie Player, ensuring it's only loaded on the client side
 const Player = dynamic(() => import("lottie-react"), { ssr: false });
@@ -26,18 +31,27 @@ const Player = dynamic(() => import("lottie-react"), { ssr: false });
 export default function ChatPage() {
   // Custom hook for authentication (assuming it redirects if not authenticated)
   useRequireAuth();
+  // In your main page/component
 
+  // State management for the quiz flow and chat messages
   // State management for the quiz flow and chat messages
   const [state, setState] = useState<QuizState>(() => loadChatState());
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // Refs for scrolling and message ID generation
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageIdRef = useRef(0);
-  const hasInitializedRef = useRef(false); // Flag to ensure initial load logic runs only once
+  const hasInitializedRef = useRef(false);
+
+  const shouldBlockReload =
+    (state.phase === "start_quiz" || state.phase === "questions") &&
+    state.phaseProgress === "in_progress";
+
+  usePreventReload(shouldBlockReload);
 
   // Effect to persist quiz state to local storage whenever it changes
   useEffect(() => {
@@ -58,17 +72,15 @@ export default function ChatPage() {
   }, [messages, isTyping, scrollToBottom]);
 
   // Helper function to update the quiz state and immediately save it
-  // Memoized using useCallback to prevent unnecessary re-renders
   const updateState = useCallback((updates: Partial<QuizState>) => {
     setState((prev) => {
       const newState = { ...prev, ...updates };
-      saveChatState(newState); // Save immediately to local storage
+      saveChatState(newState);
       return newState;
     });
   }, []);
 
   // Helper function to check if a bot message is already present in the current messages array
-  // This is crucial for preventing duplication on reload
   const isMessageAlreadyInHistory = useCallback(
     (messageText: string, history: ChatMessage[]): boolean => {
       return history.some(
@@ -78,85 +90,173 @@ export default function ChatPage() {
     []
   );
 
-  // Unified function to add a message (bot or user) to the chat
-  // It immediately saves the entire chat history after adding a message
+  // FIXED: Unified function to add a message with immediate persistence
   const addMessage = useCallback(
     (message: string, type: "bot" | "user", reaction?: QuizReaction) => {
       const newMessage: ChatMessage = {
-        id: `msg_${messageIdRef.current++}`,
+        id: `msg_${nanoid()}`,
         type,
         message,
         timestamp: Date.now(),
         reaction: reaction || undefined,
       };
 
-      setMessages((prev) => {
-        const updated = [...prev, newMessage];
-        saveChatHistory(updated); // CRUCIAL: Save history IMMEDIATELY after adding any message
-        return updated;
-      });
+      // Get current messages from storage to ensure we're working with the latest data
+      const currentMessages = loadChatHistory();
+      const updatedMessages = [...currentMessages, newMessage];
+
+      // Save to persistent storage IMMEDIATELY
+      saveChatHistory(updatedMessages);
+
+      // Update UI state
+      setMessages(updatedMessages);
+
       return newMessage;
     },
     []
-  ); // No dependencies for addMessage itself, it operates on a new message
+  );
 
-  // Function to simulate bot typing and add a sequence of messages
-  // It now takes `existingMessages` to prevent re-adding already displayed messages
+  // NEW: Save expected messages to prevent loss during typing
+  const saveExpectedMessages = useCallback(
+    (messages: string[], phase: string, context: any) => {
+      const expectedMessagesKey = `expected_messages_${phase}`;
+      localStorage.setItem(
+        expectedMessagesKey,
+        JSON.stringify({
+          messages,
+          phase,
+          context,
+          timestamp: Date.now(),
+        })
+      );
+    },
+    []
+  );
+
+  // FIXED: Function to simulate bot typing with better recovery
   const addBotMessages = async (
     messagesToAdd: string[],
-    existingMessages: ChatMessage[] = []
+    existingMessages: ChatMessage[] = [],
+    withDelay: boolean = true
   ) => {
-    for (const message of messagesToAdd) {
-      if (!isMessageAlreadyInHistory(message, existingMessages)) {
-        setIsTyping(true);
-        await delay(500 + Math.random() * 1000);
-        setIsTyping(false);
-        addMessage(message, "bot");
-        await delay(500);
-      } else {
-        // If the message is already in history, skip adding it to prevent duplication.
-        // console.log(`Skipping already existing message: "${message}"`);
+    // Always get the latest messages from storage
+    let currentMessages = loadChatHistory();
+
+    for (let i = 0; i < messagesToAdd.length; i++) {
+      const message = messagesToAdd[i];
+
+      if (!isMessageAlreadyInHistory(message, currentMessages)) {
+        try {
+          // Save a checkpoint indicating we're about to add this message
+          const checkpointKey = `typing_checkpoint_${Date.now()}`;
+          localStorage.setItem(
+            checkpointKey,
+            JSON.stringify({
+              message,
+              timestamp: Date.now(),
+              messageIndex: i,
+              totalMessages: messagesToAdd.length,
+            })
+          );
+
+          if (withDelay) {
+            setIsTyping(true);
+            await delay(500 + Math.random() * 1000);
+            setIsTyping(false);
+          }
+
+          // Add message with immediate persistence
+          const newMessage = addMessage(message, "bot");
+
+          // Update our local reference for the next iteration
+          currentMessages = [...currentMessages, newMessage];
+
+          // Clear the checkpoint after successful addition
+          localStorage.removeItem(checkpointKey);
+
+          if (withDelay) {
+            await delay(500);
+          }
+        } catch (error) {
+          console.error("Error adding message:", error);
+          setIsTyping(false);
+        }
       }
     }
   };
 
-  // --- Phase Transition Functions ---
-  // These functions encapsulate the logic for starting each major phase of the quiz.
+  // NEW: Clear expected messages after they're successfully added
+  const clearExpectedMessages = useCallback((phase: string) => {
+    const expectedMessagesKey = `expected_messages_${phase}`;
+    localStorage.removeItem(expectedMessagesKey);
+  }, []);
 
-  // Presents a specific question to the user
-  // Declared BEFORE startQuiz as it's a dependency
-  const presentQuestion = useCallback(
-    async (questionIndex: number) => {
-      const question = QUIZ_DATA.questions[questionIndex];
-      const introMsg = QUIZ_DATA.botMessages.questionIntro(
-        questionIndex + 1,
-        QUIZ_DATA.questions.length
-      );
-      // Pass current messages to addBotMessages to prevent duplication on reload
-      await addBotMessages([...introMsg, question.question], messages);
-      setShowOptions(true);
-    },
-    [addBotMessages, messages]
-  );
-
-  // Starts the quiz, transitioning to the questions phase
-  const startQuiz = useCallback(async () => {
-    updateState({ phase: "questions", phaseProgress: "in_progress" });
-    await presentQuestion(state.currentQuestion || 0);
-  }, [updateState, state.currentQuestion, presentQuestion]);
-
-  // Initializes the welcome phase, sends welcome messages, and marks phase complete
-  const initWelcome = useCallback(async () => {
-    updateState({ phase: "welcome", phaseProgress: "in_progress" });
-    // Pass current messages to addBotMessages to prevent duplication on reload
-    await addBotMessages(
-      PHASE_CONFIG.welcome.initialBotMessages(state.crushName),
-      messages
+  // NEW: Recover expected messages on reload
+  const recoverExpectedMessages = useCallback(async () => {
+    const expectedMessagesKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("expected_messages_")
     );
-    updateState({ phaseProgress: "complete" });
-  }, [updateState, addBotMessages, state.crushName, messages]);
 
-  // Adds a reaction bubble message (text, meme, or both)
+    for (const key of expectedMessagesKeys) {
+      try {
+        const data = JSON.parse(localStorage.getItem(key) || "{}");
+        const { messages, phase, context } = data;
+
+        if (messages && messages.length > 0) {
+          const currentMessages = loadChatHistory();
+
+          // Check which messages are missing
+          const missingMessages = messages.filter(
+            (msg: any) => !isMessageAlreadyInHistory(msg, currentMessages)
+          );
+
+          if (missingMessages.length > 0) {
+            await addBotMessages(missingMessages, currentMessages, false); // false = no delay
+          }
+        }
+      } catch (error) {
+        console.error("Error recovering expected messages:", error);
+      }
+
+      // Clean up after recovery
+      localStorage.removeItem(key);
+    }
+  }, [addBotMessages, isMessageAlreadyInHistory]);
+
+  // Helper function to recover from interrupted message sequences
+  const recoverFromInterruption = useCallback(async () => {
+    // First recover expected messages
+    await recoverExpectedMessages();
+
+    // Then check for typing checkpoints
+    const checkpointKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("typing_checkpoint_")
+    );
+
+    if (checkpointKeys.length > 0) {
+      // Process the most recent checkpoint
+      const latestCheckpoint = checkpointKeys
+        .map((key) => ({
+          key,
+          data: JSON.parse(localStorage.getItem(key) || "{}"),
+        }))
+        .sort((a, b) => b.data.timestamp - a.data.timestamp)[0];
+
+      const { message } = latestCheckpoint.data;
+
+      // Check if this message was actually added
+      const currentMessages = loadChatHistory();
+      if (!isMessageAlreadyInHistory(message, currentMessages)) {
+        // Message was interrupted, add it immediately
+        addMessage(message, "bot");
+      }
+
+      // Clean up all checkpoints
+      checkpointKeys.forEach((key) => localStorage.removeItem(key));
+    }
+  }, [addMessage, isMessageAlreadyInHistory, recoverExpectedMessages]);
+
+  // FIXED: Add reaction with immediate persistence
   const addReaction = useCallback(
     async (reaction: QuizReaction) => {
       if (reaction.type === "both") {
@@ -178,55 +278,130 @@ export default function ChatPage() {
     [addMessage]
   );
 
+  // FIXED: Presents a specific question to the user with expected message tracking
+  const presentQuestion = useCallback(
+    async (questionIndex: number) => {
+      const question = QUIZ_DATA.questions[questionIndex];
+      const introMsg = QUIZ_DATA.botMessages.questionIntro(
+        questionIndex + 1,
+        QUIZ_DATA.questions.length
+      );
+
+      const allMessages = [...introMsg, question.question];
+
+      // Save expected messages before starting to add them
+      saveExpectedMessages(allMessages, `question_${questionIndex}`, {
+        questionIndex,
+      });
+
+      // Get the latest messages from storage
+      const currentMessages = loadChatHistory();
+      await addBotMessages(allMessages, currentMessages);
+
+      // Clear expected messages after successful addition
+      clearExpectedMessages(`question_${questionIndex}`);
+
+      setShowOptions(true);
+    },
+    [addBotMessages, saveExpectedMessages, clearExpectedMessages]
+  );
+
+  // Starts the quiz, transitioning to the questions phase
+  const startQuiz = useCallback(async () => {
+    updateState({ phase: "questions", phaseProgress: "in_progress" });
+    await presentQuestion(state.currentQuestion || 0);
+  }, [updateState, state.currentQuestion, presentQuestion]);
+
+  // Initializes the welcome phase, sends welcome messages, and marks phase complete
+  const initWelcome = useCallback(async () => {
+    updateState({ phase: "welcome", phaseProgress: "in_progress" });
+
+    const welcomeMessages = PHASE_CONFIG.welcome.initialBotMessages(
+      state.crushName
+    );
+
+    // Save expected messages
+    saveExpectedMessages(welcomeMessages, "welcome", {
+      crushName: state.crushName,
+    });
+
+    // Get the latest messages from storage
+    const currentMessages = loadChatHistory();
+    await addBotMessages(welcomeMessages, currentMessages);
+
+    // Clear expected messages after successful addition
+    clearExpectedMessages("welcome");
+
+    updateState({ phaseProgress: "complete" });
+  }, [
+    updateState,
+    addBotMessages,
+    state.crushName,
+    saveExpectedMessages,
+    clearExpectedMessages,
+  ]);
+
   // Displays the final quiz results based on the total score
   const showResults = useCallback(
     async (finalScore: number) => {
       updateState({ phase: "result", phaseProgress: "in_progress" });
 
-      // Send initial calculating messages for the result phase
-      // Pass current messages to addBotMessages to prevent duplication on reload
-      await addBotMessages(
-        PHASE_CONFIG.result.initialBotMessages(state.crushName),
-        messages
-      );
-      await delay(2000);
+      setIsCalculating(true);
+      await delay(600); // 200–500 ms for smoother experience
 
       const resultType = calculateResult(
         finalScore,
         QUIZ_DATA.questions.length
       );
+
       const resultMessages = QUIZ_DATA.botMessages.results[resultType](
         state.crushName
       );
-      // Send dynamic result messages
-      // Pass current messages to addBotMessages to prevent duplication on reload
-      await addBotMessages(resultMessages, messages);
+
+      // Save result data to cookie/localStorage or shared context
+      localStorage.setItem(
+        "quiz_result",
+        JSON.stringify({
+          crushName: state.crushName,
+          resultMessages,
+          finalScore,
+          resultType,
+        })
+      );
 
       updateState({ phaseProgress: "complete" });
+      clearSavedData();
+      setIsCalculating(false);
+      // Navigate to the result page
+      redirect("/result");
     },
-    [updateState, addBotMessages, state.crushName, messages]
+    [updateState, state.crushName, router]
   );
-
-  // --- User Interaction Handlers ---
 
   // Handles the submission of the crush's name
   const handleNameSubmit = async () => {
     if (!inputValue.trim()) return;
 
     const name = inputValue.trim();
-    addMessage(name, "user"); // Add user's name message
+    addMessage(name, "user");
     setInputValue("");
 
     updateState({ crushName: name });
-    // Send "after name" messages from PHASE_CONFIG
-    // Pass current messages to addBotMessages to prevent duplication on reload
-    await addBotMessages(
-      PHASE_CONFIG.start_quiz.initialBotMessages(name),
-      messages
-    );
-    updateState({ phase: "start_quiz", phaseProgress: "complete" }); // Mark start_quiz phase as complete
 
-    // Trigger the next action defined in PHASE_CONFIG for start_quiz completion
+    const startQuizMessages = PHASE_CONFIG.start_quiz.initialBotMessages(name);
+
+    // Save expected messages
+    saveExpectedMessages(startQuizMessages, "start_quiz", { name });
+
+    // Get the latest messages from storage
+    const currentMessages = loadChatHistory();
+    await addBotMessages(startQuizMessages, currentMessages);
+
+    // Clear expected messages after successful addition
+    clearExpectedMessages("start_quiz");
+
+    updateState({ phase: "start_quiz", phaseProgress: "complete" });
+
     PHASE_CONFIG.start_quiz.onComplete(
       startQuiz,
       showResults,
@@ -237,13 +412,13 @@ export default function ChatPage() {
     );
   };
 
-  // Handles the selection of an option during the questions phase
+  // FIXED: Handles the selection of an option during the questions phase
   const handleOptionSelect = async (option: {
     text: string;
     value: number;
   }) => {
     setShowOptions(false);
-    addMessage(option.text, "user"); // Add user's selected option message
+    addMessage(option.text, "user");
 
     const newAnswers = [...state.answers, option.value];
     const newScore = state.totalScore + option.value;
@@ -253,7 +428,6 @@ export default function ChatPage() {
       answers: newAnswers,
       totalScore: newScore,
       currentQuestion: nextQuestion,
-      // Phase remains 'questions' and progress 'in_progress' until quiz complete
     });
 
     await delay(500);
@@ -262,18 +436,29 @@ export default function ChatPage() {
     setIsTyping(false);
 
     const reaction = getRandomReaction(option.value);
-    await addReaction(reaction); // Add bot's reaction to the answer
+    await addReaction(reaction);
 
-    await delay(2000); // Pacing delay
+    await delay(2000);
 
     const isLastQuestion = nextQuestion >= QUIZ_DATA.questions.length;
 
     if (!isLastQuestion) {
       await delay(500);
-      await presentQuestion(nextQuestion); // Present the next question
+      // Pre-save the next question to prevent loss
+      const nextQuestionData = QUIZ_DATA.questions[nextQuestion];
+      const nextIntroMsg = QUIZ_DATA.botMessages.questionIntro(
+        nextQuestion + 1,
+        QUIZ_DATA.questions.length
+      );
+      const nextQuestionMessages = [...nextIntroMsg, nextQuestionData.question];
+
+      saveExpectedMessages(nextQuestionMessages, `question_${nextQuestion}`, {
+        questionIndex: nextQuestion,
+      });
+
+      await presentQuestion(nextQuestion);
     } else {
-      updateState({ phaseProgress: "complete" }); // Questions phase is now complete
-      // Trigger the next action defined in PHASE_CONFIG for questions completion
+      updateState({ phaseProgress: "complete" });
       PHASE_CONFIG.questions.onComplete(
         startQuiz,
         showResults,
@@ -287,6 +472,18 @@ export default function ChatPage() {
 
   // Resets the quiz to its initial state
   const resetQuiz = useCallback(() => {
+    // Clear any typing checkpoints
+    const checkpointKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("typing_checkpoint_")
+    );
+    checkpointKeys.forEach((key) => localStorage.removeItem(key));
+
+    // Clear expected messages
+    const expectedMessageKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("expected_messages_")
+    );
+    expectedMessageKeys.forEach((key) => localStorage.removeItem(key));
+
     const defaultState: QuizState = {
       phase: "welcome",
       phaseProgress: "not_started",
@@ -294,96 +491,86 @@ export default function ChatPage() {
       answers: [],
       crushName: "",
       totalScore: 0,
-      totalQuestions: QUIZ_DATA.questions.length, // Ensure totalQuestions is accurate
+      totalQuestions: QUIZ_DATA.questions.length,
     };
 
     setState(defaultState);
-    saveChatState(defaultState); // Clear saved state in local storage
-    setMessages([]); // Clear messages in UI
-    saveChatHistory([]); // Clear saved history in local storage
+    saveChatState(defaultState);
+    setMessages([]);
+    saveChatHistory([]);
     setInputValue("");
     setShowOptions(false);
-    messageIdRef.current = 0; // Reset message ID counter
+    messageIdRef.current = 0;
 
-    // Immediately start the welcome sequence after reset
     setTimeout(() => {
       initWelcome();
     }, 100);
   }, [initWelcome]);
 
-  // Clears all saved data and resets the quiz
   const clearSavedData = useCallback(() => {
     resetQuiz();
   }, [resetQuiz]);
 
-  // --- Initial Load and Reload Logic ---
-  // This useEffect handles loading saved state and resuming the chat flow.
+  // FIXED: Initial Load and Reload Logic with better recovery
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      hasInitializedRef.current = true; // Mark as initialized
+      hasInitializedRef.current = true;
 
-      const savedMessages = loadChatHistory(); // Load all saved messages
-      const savedState = loadChatState(); // Load saved quiz state
+      // Initialize the recovery process
+      (async () => {
+        // FIRST: Recover from any interrupted message sequences
+        await recoverFromInterruption();
 
-      setState(savedState); // Restore state
-      messageIdRef.current = savedMessages.length; // Ensure new messages get unique IDs
+        const savedMessages = loadChatHistory();
+        const savedState = loadChatState();
 
-      // Always restore saved messages first, this is the visual truth of the chat
-      if (savedMessages.length > 0) {
-        setMessages(savedMessages);
-      }
+        setState(savedState);
+        messageIdRef.current = savedMessages.length;
 
-      // Now, determine what action to take based on the saved state.
-      // The goal is NOT to re-add messages that are already loaded,
-      // but to trigger the *next* logical step or to set the UI to await user input.
-      const { phase, phaseProgress, currentQuestion, totalScore, crushName } =
-        savedState;
-
-      if (phaseProgress === "complete") {
-        // If a phase was marked complete, it means its initial messages were sent.
-        // We now move to the *next* logical phase's action as defined in PHASE_CONFIG.
-        const config = PHASE_CONFIG[phase];
-        if (config && config.onComplete) {
-          config.onComplete(
-            startQuiz,
-            showResults,
-            crushName,
-            currentQuestion,
-            totalScore,
-            QUIZ_DATA.questions.length
-          );
-        } else {
-          console.warn(
-            `No onComplete handler found for phase: ${phase}. Restarting welcome.`
-          );
-          // Fallback: If no config or handler, restart welcome unless it's the final result phase
-          if (phase !== "result") {
-            initWelcome();
-          }
+        if (savedMessages.length > 0) {
+          setMessages(savedMessages);
         }
-      } else if (phaseProgress === "in_progress") {
-        // If the phase was in_progress, it means the bot was in the middle of *doing something*
-        // (sending initial messages for the phase) or waiting for user input.
-        const config = PHASE_CONFIG[phase];
-        if (config) {
-          const expectedInitialMessages = config.initialBotMessages(crushName);
-          // Check if all expected initial messages for this phase are already in the saved history
-          const allInitialMessagesPresent = expectedInitialMessages.every(
-            (msg) => isMessageAlreadyInHistory(msg, savedMessages)
-          );
 
-          if (
-            !allInitialMessagesPresent &&
-            expectedInitialMessages.length > 0
-          ) {
-            // If not all initial messages for this phase are in history, re-send them.
-            // This covers reloads happening mid-way through addBotMessages.
-            (async () => {
-              updateState({ phase, phaseProgress: "in_progress" }); // Ensure state is correctly set
-              // Pass savedMessages to addBotMessages to prevent re-adding already-present messages
-              await addBotMessages(expectedInitialMessages, savedMessages);
-              updateState({ phaseProgress: "complete" }); // Mark complete after re-sending
-              // Then trigger the onComplete action for this phase
+        const { phase, phaseProgress, currentQuestion, totalScore, crushName } =
+          savedState;
+
+        // FIXED: Properly restore showOptions state
+        if (phase === "questions" && phaseProgress === "in_progress") {
+          setShowOptions(true);
+        }
+
+        if (phaseProgress === "complete") {
+          const config = PHASE_CONFIG[phase];
+          if (config && config.onComplete) {
+            // Special handling for welcome phase: if user already entered name, proceed to start_quiz
+            if (phase === "welcome" && crushName && crushName.trim() !== "") {
+              // User has entered name, check if start_quiz messages are present
+              const startQuizMessages =
+                PHASE_CONFIG.start_quiz.initialBotMessages(crushName);
+              const hasStartQuizMessages = startQuizMessages.every((msg) =>
+                isMessageAlreadyInHistory(msg, savedMessages)
+              );
+
+              if (hasStartQuizMessages) {
+                // Start quiz messages are present, proceed to quiz
+                updateState({ phase: "start_quiz", phaseProgress: "complete" });
+                setTimeout(() => startQuiz(), 100);
+              } else {
+                // Start quiz messages missing, add them and proceed
+                (async () => {
+                  updateState({
+                    phase: "start_quiz",
+                    phaseProgress: "in_progress",
+                  });
+                  await addBotMessages(startQuizMessages, savedMessages);
+                  updateState({
+                    phase: "start_quiz",
+                    phaseProgress: "complete",
+                  });
+                  setTimeout(() => startQuiz(), 100);
+                })();
+              }
+            } else {
               config.onComplete(
                 startQuiz,
                 showResults,
@@ -392,40 +579,121 @@ export default function ChatPage() {
                 totalScore,
                 QUIZ_DATA.questions.length
               );
-            })();
+            }
           } else {
-            // All initial messages are present OR this phase doesn't have fixed initial messages (like 'questions').
-            // Trigger the 'next action' for this specific phase based on its nature.
-            switch (phase) {
-              case "welcome":
-                // Input field for name will be rendered by renderInput.
-                // No specific bot action needed if messages are already there.
-                break;
-              case "start_quiz":
-                // Messages are present, so it means we were about to start quiz.
-                setTimeout(() => startQuiz(), 100);
-                break;
-              case "questions":
-                // Show options, question and intro messages should be in saved messages.
-                setShowOptions(true);
-                break;
-              case "result":
-                // Re-trigger showResults to ensure all messages (including dynamic result) are shown.
-                // showResults will also handle the "calculating" messages if they aren't fully sent.
-                showResults(totalScore);
-                break;
+            console.warn(
+              `No onComplete handler found for phase: ${phase}. Restarting welcome.`
+            );
+            if (phase !== "result") {
+              initWelcome();
             }
           }
+        } else if (phaseProgress === "in_progress") {
+          const config = PHASE_CONFIG[phase];
+          if (config) {
+            const expectedInitialMessages =
+              config.initialBotMessages(crushName);
+            const allInitialMessagesPresent = expectedInitialMessages.every(
+              (msg) => isMessageAlreadyInHistory(msg, savedMessages)
+            );
+
+            if (
+              !allInitialMessagesPresent &&
+              expectedInitialMessages.length > 0
+            ) {
+              updateState({ phase, phaseProgress: "in_progress" });
+              await addBotMessages(expectedInitialMessages, savedMessages);
+              updateState({ phaseProgress: "complete" });
+
+              if (config.onComplete) {
+                config.onComplete(
+                  startQuiz,
+                  showResults,
+                  crushName,
+                  currentQuestion,
+                  totalScore,
+                  QUIZ_DATA.questions.length
+                );
+              }
+            } else {
+              switch (phase) {
+                case "welcome":
+                  // Check if user has already entered name but welcome is still in progress
+                  if (crushName && crushName.trim() !== "") {
+                    // User has entered name, should proceed to start_quiz
+                    const startQuizMessages =
+                      PHASE_CONFIG.start_quiz.initialBotMessages(crushName);
+                    const hasStartQuizMessages = startQuizMessages.every(
+                      (msg) => isMessageAlreadyInHistory(msg, savedMessages)
+                    );
+
+                    if (!hasStartQuizMessages) {
+                      // Add missing start quiz messages
+                      (async () => {
+                        updateState({
+                          phase: "start_quiz",
+                          phaseProgress: "in_progress",
+                        });
+                        await addBotMessages(startQuizMessages, savedMessages);
+                        updateState({
+                          phase: "start_quiz",
+                          phaseProgress: "complete",
+                        });
+                        setTimeout(() => startQuiz(), 100);
+                      })();
+                    } else {
+                      // Messages are there, just proceed
+                      updateState({
+                        phase: "start_quiz",
+                        phaseProgress: "complete",
+                      });
+                      setTimeout(() => startQuiz(), 100);
+                    }
+                  }
+                  // If no crushName, stay in welcome (waiting for user input)
+                  break;
+                case "start_quiz":
+                  setTimeout(() => startQuiz(), 100);
+                  break;
+                case "questions":
+                  // Ensure the current question is displayed
+                  const currentQuestionData =
+                    QUIZ_DATA.questions[currentQuestion];
+                  if (currentQuestionData) {
+                    const introMsg = QUIZ_DATA.botMessages.questionIntro(
+                      currentQuestion + 1,
+                      QUIZ_DATA.questions.length
+                    );
+                    const questionMessages = [
+                      ...introMsg,
+                      currentQuestionData.question,
+                    ];
+
+                    const allQuestionMessagesPresent = questionMessages.every(
+                      (msg) => isMessageAlreadyInHistory(msg, savedMessages)
+                    );
+
+                    if (!allQuestionMessagesPresent) {
+                      await addBotMessages(questionMessages, savedMessages);
+                    }
+                  }
+                  setShowOptions(true);
+                  break;
+                case "result":
+                  showResults(totalScore);
+                  break;
+              }
+            }
+          } else {
+            console.warn(
+              `No config found for phase: ${phase}. Restarting welcome.`
+            );
+            initWelcome();
+          }
         } else {
-          console.warn(
-            `No config found for phase: ${phase}. Restarting welcome.`
-          );
           initWelcome();
         }
-      } else {
-        // 'not_started' or initial load with no saved state
-        initWelcome();
-      }
+      })();
     }
   }, [
     state.phase,
@@ -436,17 +704,14 @@ export default function ChatPage() {
     initWelcome,
     startQuiz,
     showResults,
-    presentQuestion, // Dependency for `startQuiz`
+    presentQuestion,
     updateState,
     addBotMessages,
-    addReaction, // Dependency for `showResults`
-    messages, // Dependency for `addBotMessages` and `initWelcome`
-    isMessageAlreadyInHistory, // Dependency for `isMessageAlreadyInHistory`
+    addReaction,
+    isMessageAlreadyInHistory,
+    recoverFromInterruption,
   ]);
-
-  // --- Render Functions for UI Sections ---
-
-  // Renders the input field for name or null otherwise
+  // Render functions remain the same
   const renderInput = () => {
     if (state.phase === "welcome" || state.phase === "start_quiz") {
       return (
@@ -469,7 +734,6 @@ export default function ChatPage() {
     return null;
   };
 
-  // Renders the option buttons during the questions phase
   const renderOptions = () => {
     if (state.phase === "questions" && showOptions) {
       const currentQuestion = QUIZ_DATA.questions[state.currentQuestion];
@@ -488,7 +752,6 @@ export default function ChatPage() {
     return null;
   };
 
-  // Renders the restart buttons after the quiz results are shown
   const renderRestartButton = () => {
     if (state.phase === "result") {
       return (
@@ -512,7 +775,6 @@ export default function ChatPage() {
     return null;
   };
 
-  // Main component render
   return (
     <div className="lg:p-[2.5%] grid gap-6 w-screen h-screen grid-rows-[auto_1fr] grid-cols-[2fr_1.2fr]">
       <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary">
@@ -540,11 +802,66 @@ export default function ChatPage() {
         {isTyping && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </main>
+      <CalculatingModal isOpen={isCalculating} />
       <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words">
         {renderOptions()}
         {renderInput()}
-        {renderRestartButton()}
       </section>
     </div>
   );
 }
+
+// const showResults = useCallback(
+//   async (finalScore: number) => {
+//     updateState({ phase: "result", phaseProgress: "in_progress" });
+
+//     // Get the latest messages from storage
+//     let currentMessages = loadChatHistory();
+
+//     const initialMessages = PHASE_CONFIG.result.initialBotMessages(
+//       state.crushName
+//     );
+
+//     // Save expected messages for initial result messages
+//     saveExpectedMessages(initialMessages, "result_initial", {
+//       crushName: state.crushName,
+//       finalScore,
+//     });
+
+//     // Send initial calculating messages for the result phase
+//     await addBotMessages(initialMessages, currentMessages);
+
+//     // Clear expected messages after successful addition
+//     clearExpectedMessages("result_initial");
+
+//     await delay(2000);
+
+//     const resultType = calculateResult(finalScore, QUIZ_DATA.questions.length);
+//     const resultMessages = QUIZ_DATA.botMessages.results[resultType](
+//       state.crushName
+//     );
+
+//     // Save expected messages for final result messages
+//     saveExpectedMessages(resultMessages, "result_final", {
+//       crushName: state.crushName,
+//       finalScore,
+//       resultType,
+//     });
+
+//     // Get updated messages after the calculating messages
+//     currentMessages = loadChatHistory();
+//     await addBotMessages(resultMessages, currentMessages);
+
+//     // Clear expected messages after successful addition
+//     clearExpectedMessages("result_final");
+
+//     updateState({ phaseProgress: "complete" });
+//   },
+//   [
+//     updateState,
+//     addBotMessages,
+//     state.crushName,
+//     saveExpectedMessages,
+//     clearExpectedMessages,
+//   ]
+// );
