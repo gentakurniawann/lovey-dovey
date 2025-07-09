@@ -1,4 +1,4 @@
-import { QuizData } from "@/types/chat";
+import { PhaseConfigEntry, QuizData, QuizPhase } from "@/types/chat";
 
 export const QUIZ_DATA: QuizData = {
   questions: [
@@ -233,5 +233,74 @@ export const QUIZ_DATA: QuizData = {
         memeAlt: "Red flag",
       },
     ],
+  },
+};
+
+export const PHASE_CONFIG: { [key in QuizPhase]: PhaseConfigEntry } = {
+  welcome: {
+    initialBotMessages: () => QUIZ_DATA.botMessages.welcome,
+    onComplete: (
+      startQuiz,
+      showResults,
+      crushName,
+      currentQuestion,
+      totalScore,
+      totalQuestions
+    ) => {
+      // After welcome messages, we wait for name input.
+      // The name submit handler will then transition to 'start_quiz' messages.
+      // No direct automated action here, as it's user-driven.
+    },
+  },
+  start_quiz: {
+    initialBotMessages: (crushName: string) =>
+      QUIZ_DATA.botMessages.afterName(crushName),
+    onComplete: (
+      startQuiz,
+      showResults,
+      crushName,
+      currentQuestion,
+      totalScore,
+      totalQuestions
+    ) => {
+      // After start_quiz messages are sent, we initiate the actual quiz (questions phase)
+      setTimeout(() => startQuiz(), 500);
+    },
+  },
+  questions: {
+    // Questions don't have a single fixed set of initial messages for the phase itself,
+    // as each question is a dynamic message sequence.
+    // The `presentQuestion` function handles adding these.
+    initialBotMessages: (crushName: string) => [], // No fixed initial messages for the phase
+    onComplete: (
+      startQuiz,
+      showResults,
+      crushName,
+      currentQuestion,
+      totalScore,
+      totalQuestions
+    ) => {
+      // After all questions are answered, show results
+      setTimeout(() => showResults(totalScore), 500);
+    },
+  },
+  result: {
+    // Result messages are dynamic based on score.
+    // The `showResults` function handles adding these.
+    initialBotMessages: (crushName: string) => [
+      "Calculating your crush compatibility...",
+      "...",
+    ], // These are the initial fixed messages for the result phase
+    onComplete: (
+      startQuiz,
+      showResults,
+      crushName,
+      currentQuestion,
+      totalScore,
+      totalQuestions
+    ) => {
+      // Quiz is fully complete, nothing more to do automatically.
+      // The UI will display the restart button.
+    },
   },
 };

@@ -5,9 +5,9 @@ export type PhaseProgress = "not_started" | "in_progress" | "complete";
 export interface ChatMessage {
   id: string;
   type: "bot" | "user";
-  message: string;
+  message: string; // The actual message content
   timestamp: number;
-  reaction?: QuizReaction; // Add this field
+  reaction?: QuizReaction;
 }
 
 export interface QuizState {
@@ -56,3 +56,18 @@ export type QuizData = {
     [key: number]: QuizReaction[];
   };
 };
+
+export interface PhaseConfigEntry {
+  initialBotMessages: (crushName: string) => string[];
+  onComplete: (
+    // These are functions from ChatPage to trigger next steps
+    startQuiz: () => Promise<void>,
+    showResults: (score: number) => Promise<void>,
+    // Relevant state data
+    crushName: string,
+    currentQuestion: number,
+    totalScore: number,
+    totalQuestions: number
+  ) => void;
+  // You can add more properties here, e.g., onReloadAction, expectedUserAction, etc.
+}
