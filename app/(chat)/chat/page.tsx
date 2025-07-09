@@ -1,8 +1,19 @@
 "use client";
 import { setCrushName, useRequireAuth } from "@/libs/authManager";
 import { useEffect, useRef, useState } from "react";
-import { saveChatState, loadChatState } from "@/libs/chatManager";
-import { ChatMessage, QuizPhase, QuizReaction, QuizState } from "@/types/chat";
+import {
+  saveChatState,
+  loadChatState,
+  loadChatHistory,
+  saveChatHistory,
+} from "@/libs/chatManager";
+import {
+  ChatMessage,
+  PhaseProgress,
+  QuizPhase,
+  QuizReaction,
+  QuizState,
+} from "@/types/chat";
 import { calculateResult, delay, getRandomReaction } from "@/utils/randomQuest";
 import { QUIZ_DATA } from "@/constants/chatConst";
 import { OptionButton } from "@/components/chat/optionBubble";
@@ -23,7 +34,6 @@ export default function ChatPage() {
   useRequireAuth();
 
   const [state, setState] = useState<QuizState>(() => loadChatState());
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -31,7 +41,6 @@ export default function ChatPage() {
   const [currentReaction, setCurrentReaction] = useState<QuizReaction | null>(
     null
   );
-  const [username, setUsername] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageIdRef = useRef(0);
@@ -49,16 +58,74 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  // 🎯 SIMPLE RELOAD LOGIC
   useEffect(() => {
     if (!hasInitializedRef.current) {
       hasInitializedRef.current = true;
 
-      // 👇 One-time-only side effects
-      if (state.phase === "welcome") {
-        initWelcome();
+      const savedMessages = loadChatHistory();
+      const savedState = loadChatState();
+
+      setState(savedState);
+      messageIdRef.current = savedMessages.length;
+
+      // Always restore saved messages first
+      if (savedMessages.length > 0) {
+        setMessages(savedMessages);
       }
+
+      // Then determine what to do based on current state
+      handleReload(savedState);
     }
   }, []);
+
+  const handleReload = (savedState: QuizState) => {
+    const { phase, phaseProgress, currentQuestion, totalScore, crushName } =
+      savedState;
+
+    if (phaseProgress === "in_progress") {
+      // For in_progress phases, restart from beginning (except questions)
+      switch (phase) {
+        case "welcome":
+          initWelcome();
+          break;
+        case "start_quiz":
+          runPhase("start_quiz", () =>
+            QUIZ_DATA.botMessages.afterName(crushName)
+          );
+          break;
+        case "questions":
+          // Questions in_progress: continue from current question
+          setShowOptions(true);
+          break;
+        case "result":
+          showResults(totalScore);
+          break;
+        default:
+          initWelcome();
+          break;
+      }
+    } else if (phaseProgress === "complete") {
+      // For complete phases, move to next step
+      switch (phase) {
+        case "welcome":
+          // Wait for name input (messages already loaded)
+          break;
+        case "start_quiz":
+          setTimeout(() => startQuiz(), 500);
+          break;
+        case "questions":
+          setTimeout(() => showResults(totalScore), 500);
+          break;
+        case "result":
+          // Quiz finished, do nothing
+          break;
+      }
+    } else {
+      // not_started or unknown, start fresh
+      initWelcome();
+    }
+  };
 
   const updateState = (updates: Partial<QuizState>) => {
     setState((prev) => {
@@ -75,7 +142,17 @@ export default function ChatPage() {
       message,
       timestamp: Date.now(),
     };
-    setMessages((prev) => [...prev, newMessage]);
+
+    setMessages((prev) => {
+      const updated = [...prev, newMessage];
+      // Only save to history if phase is complete OR if it's questions phase
+      if (state.phaseProgress === "complete" || state.phase === "questions") {
+        saveChatHistory(updated);
+      }
+
+      return updated;
+    });
+
     return newMessage;
   };
 
@@ -89,9 +166,22 @@ export default function ChatPage() {
     }
   };
 
-  const initWelcome = async () => {
-    await delay(1000);
-    await addBotMessages(QUIZ_DATA.botMessages.welcome);
+  const runPhase = async (
+    phase: QuizPhase,
+    botMessages: string[] | (() => string[])
+  ) => {
+    updateState({ phase, phaseProgress: "in_progress" });
+
+    const messages =
+      typeof botMessages === "function" ? botMessages() : botMessages;
+    await addBotMessages(messages);
+
+    updateState({ phaseProgress: "complete" });
+  };
+
+  const initWelcome = () => {
+    updateState({ phase: "welcome", phaseProgress: "in_progress" });
+    runPhase("welcome", QUIZ_DATA.botMessages.welcome);
   };
 
   const handleNameSubmit = async () => {
@@ -101,18 +191,16 @@ export default function ChatPage() {
     addMessage(name, "user");
     setInputValue("");
 
-    updateState({ crushName: name, phase: "start_quiz" });
-
-    await delay(1000);
-    await addBotMessages(QUIZ_DATA.botMessages.afterName(name));
+    updateState({ crushName: name });
+    await runPhase("start_quiz", () => QUIZ_DATA.botMessages.afterName(name));
 
     await delay(1000);
     startQuiz();
   };
 
   const startQuiz = async () => {
-    updateState({ phase: "questions" });
-    await presentQuestion(0);
+    updateState({ phase: "questions", phaseProgress: "in_progress" });
+    await presentQuestion(state.currentQuestion || 0);
   };
 
   const presentQuestion = async (questionIndex: number) => {
@@ -135,37 +223,39 @@ export default function ChatPage() {
 
     const newAnswers = [...state.answers, option.value];
     const newScore = state.totalScore + option.value;
+    const nextQuestion = state.currentQuestion + 1;
 
     updateState({
       answers: newAnswers,
       totalScore: newScore,
+      currentQuestion: nextQuestion,
     });
 
-    // Show reaction based on answer value
     await delay(1000);
     setIsTyping(true);
     await delay(1000 + Math.random() * 1000);
     setIsTyping(false);
 
     const reaction = getRandomReaction(option.value);
-
     setCurrentReaction(reaction);
 
-    await delay(2000); // Let user see the reaction
+    await delay(2000);
     setCurrentReaction(null);
 
-    if (state.currentQuestion < QUIZ_DATA.questions.length - 1) {
-      updateState({ currentQuestion: state.currentQuestion + 1 });
+    const isLastQuestion = nextQuestion >= QUIZ_DATA.questions.length;
+
+    if (!isLastQuestion) {
       await delay(1000);
-      await presentQuestion(state.currentQuestion + 1);
+      await presentQuestion(nextQuestion);
     } else {
+      updateState({ phaseProgress: "complete" });
       await delay(1000);
       showResults(newScore);
     }
   };
 
   const showResults = async (finalScore: number) => {
-    updateState({ phase: "result" });
+    updateState({ phase: "result", phaseProgress: "in_progress" });
 
     const resultType = calculateResult(finalScore, QUIZ_DATA.questions.length);
     const resultMessages = QUIZ_DATA.botMessages.results[resultType](
@@ -173,23 +263,27 @@ export default function ChatPage() {
     );
 
     await addBotMessages(["Calculating your crush compatibility...", "..."]);
-
     await delay(2000);
     await addBotMessages(resultMessages);
+
+    updateState({ phaseProgress: "complete" });
   };
 
   const resetQuiz = () => {
-    const defaultState = {
-      phase: "welcome" as QuizPhase,
+    const defaultState: QuizState = {
+      phase: "welcome",
+      phaseProgress: "not_started",
       currentQuestion: 0,
       answers: [],
       crushName: "",
       totalScore: 0,
       totalQuestions: 8,
     };
+
     setState(defaultState);
     saveChatState(defaultState);
     setMessages([]);
+    saveChatHistory([]);
     setInputValue("");
     setShowOptions(false);
     setCurrentReaction(null);
@@ -226,6 +320,7 @@ export default function ChatPage() {
     return null;
   };
 
+  // Components
   const renderOptions = () => {
     if (state.phase === "questions" && showOptions) {
       const currentQuestion = QUIZ_DATA.questions[state.currentQuestion];
@@ -307,3 +402,53 @@ export default function ChatPage() {
     </div>
   );
 }
+
+// const initWelcome = async () => {
+//   updateState({ phase: "welcome", phaseProgress: "in_progress" });
+
+//   await delay(1000);
+//   await addBotMessages(QUIZ_DATA.botMessages.welcome);
+
+//   // ✅ mark complete AFTER all welcome messages are delivered
+//   updateState({ phaseProgress: "complete" });
+// };
+
+// const handleNameSubmit = async () => {
+//   if (!inputValue.trim()) return;
+
+//   const name = inputValue.trim();
+//   addMessage(name, "user");
+//   setInputValue("");
+
+//   updateState({ crushName: name, phase: "start_quiz" });
+
+//   await delay(1000);
+//   await addBotMessages(QUIZ_DATA.botMessages.afterName(name));
+
+//   await delay(1000);
+//   startQuiz();
+// };
+
+// const addMessage = (message: string, type: "bot" | "user") => {
+//   const newMessage: ChatMessage = {
+//     id: `msg_${messageIdRef.current++}`,
+//     type,
+//     message,
+//     timestamp: Date.now(),
+//   };
+
+//   setMessages((prev) => {
+//     const updated = [...prev, newMessage];
+
+//     const shouldSave =
+//       state.phase === "questions" || state.phaseProgress === "complete";
+
+//     if (shouldSave) {
+//       saveChatHistory(updated);
+//     }
+
+//     return updated;
+//   });
+
+//   return newMessage;
+// };

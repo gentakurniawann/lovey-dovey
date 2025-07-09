@@ -1,5 +1,7 @@
 export type QuizPhase = "welcome" | "start_quiz" | "questions" | "result";
 
+export type PhaseProgress = "not_started" | "in_progress" | "complete";
+
 export interface ChatMessage {
   id: string;
   type: "bot" | "user";
@@ -7,10 +9,10 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-
 export interface QuizState {
-  totalQuestions: number
+  totalQuestions: number;
   phase: QuizPhase;
+  phaseProgress: PhaseProgress;
   currentQuestion: number;
   answers: number[];
   crushName: string;

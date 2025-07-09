@@ -3,6 +3,24 @@
 import { ChatMessage, QuizState } from "@/types/chat";
 import Cookies from "js-cookie";
 
+export const saveChatHistory = (history: ChatMessage[]) => {
+  try {
+    Cookies.set("chatHistory", JSON.stringify(history), { expires: 7 });
+  } catch (error) {
+    console.warn("Failed to save chat history:", error);
+  }
+};
+
+export const loadChatHistory = (): ChatMessage[] => {
+  try {
+    const raw = Cookies.get("chatHistory");
+    return raw ? JSON.parse(raw) : [];
+  } catch (error) {
+    console.warn("Failed to load chat history:", error);
+    return [];
+  }
+};
+
 export const setChatHistory = (message: string, type: "bot" | "user") => {
   const newMessage: ChatMessage = {
     id: crypto.randomUUID(),
@@ -19,6 +37,7 @@ export const setChatHistory = (message: string, type: "bot" | "user") => {
 export const saveChatState = (state: QuizState) => {
   try {
     Cookies.set("quizState", JSON.stringify(state), { expires: 7 });
+    console.log(state, "ini update state");
   } catch (error) {
     console.warn("Failed to save quiz state to cookies:", error);
   }
@@ -38,6 +57,8 @@ export const updateChatState = (updates: Partial<QuizState>) => {
         };
 
     const updatedState = { ...existingState, ...updates };
+
+    console.log(updatedState, "ini update state");
     saveChatState(updatedState);
   } catch (error) {
     console.warn("Failed to update quiz state in cookies:", error);
@@ -47,9 +68,7 @@ export const updateChatState = (updates: Partial<QuizState>) => {
 export const loadChatState = (): QuizState => {
   try {
     const savedState = Cookies.get("quizState");
-    console.log(savedState, "saved state di cookie");
     if (savedState) {
-      console.log(savedState, "ini statenya");
       return JSON.parse(savedState);
     }
   } catch (error) {
@@ -58,6 +77,7 @@ export const loadChatState = (): QuizState => {
   return {
     totalQuestions: 8,
     phase: "welcome",
+    phaseProgress: "not_started",
     currentQuestion: 0,
     answers: [],
     crushName: "",
