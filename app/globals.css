@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Chango&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -63,6 +65,10 @@
 
 .font-chango {
   font-family: "Chango", sans-serif;
+}
+
+.font-pixelify {
+  font-family: "Pixelify Sans", sans-serif;
 }
 
 h1 {
@@ -148,4 +154,172 @@ p {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.pixel-corners,
+.pixel-corners--wrapper {
+  clip-path: polygon(
+    0px calc(100% - 20px),
+    4px calc(100% - 20px),
+    4px calc(100% - 12px),
+    8px calc(100% - 12px),
+    8px calc(100% - 8px),
+    12px calc(100% - 8px),
+    12px calc(100% - 4px),
+    20px calc(100% - 4px),
+    20px 100%,
+    calc(100% - 20px) 100%,
+    calc(100% - 20px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 8px),
+    calc(100% - 8px) calc(100% - 8px),
+    calc(100% - 8px) calc(100% - 12px),
+    calc(100% - 4px) calc(100% - 12px),
+    calc(100% - 4px) calc(100% - 20px),
+    100% calc(100% - 20px),
+    100% 20px,
+    calc(100% - 4px) 20px,
+    calc(100% - 4px) 12px,
+    calc(100% - 8px) 12px,
+    calc(100% - 8px) 8px,
+    calc(100% - 12px) 8px,
+    calc(100% - 12px) 4px,
+    calc(100% - 20px) 4px,
+    calc(100% - 20px) 0px,
+    20px 0px,
+    20px 4px,
+    12px 4px,
+    12px 8px,
+    8px 8px,
+    8px 12px,
+    4px 12px,
+    4px 20px,
+    0px 20px
+  );
+  position: relative;
+}
+.pixel-corners {
+  border: 8px solid transparent;
+}
+.pixel-corners--wrapper {
+  width: fit-content;
+  height: fit-content;
+}
+.pixel-corners--wrapper .pixel-corners {
+  display: block;
+  clip-path: polygon(
+    8px 24px,
+    12px 24px,
+    12px 16px,
+    16px 16px,
+    16px 12px,
+    24px 12px,
+    24px 8px,
+    calc(100% - 24px) 8px,
+    calc(100% - 24px) 12px,
+    calc(100% - 16px) 12px,
+    calc(100% - 16px) 16px,
+    calc(100% - 12px) 16px,
+    calc(100% - 12px) 24px,
+    calc(100% - 8px) 24px,
+    calc(100% - 8px) calc(100% - 24px),
+    calc(100% - 12px) calc(100% - 24px),
+    calc(100% - 12px) calc(100% - 16px),
+    calc(100% - 16px) calc(100% - 16px),
+    calc(100% - 16px) calc(100% - 12px),
+    calc(100% - 24px) calc(100% - 12px),
+    calc(100% - 24px) calc(100% - 8px),
+    24px calc(100% - 8px),
+    24px calc(100% - 12px),
+    16px calc(100% - 12px),
+    16px calc(100% - 16px),
+    12px calc(100% - 16px),
+    12px calc(100% - 24px),
+    8px calc(100% - 24px)
+  );
+}
+.pixel-corners::after,
+.pixel-corners--wrapper::after {
+  content: "";
+  position: absolute;
+  clip-path: polygon(
+    0px calc(100% - 20px),
+    4px calc(100% - 20px),
+    4px calc(100% - 12px),
+    8px calc(100% - 12px),
+    8px calc(100% - 8px),
+    12px calc(100% - 8px),
+    12px calc(100% - 4px),
+    20px calc(100% - 4px),
+    20px 100%,
+    calc(100% - 20px) 100%,
+    calc(100% - 20px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 8px),
+    calc(100% - 8px) calc(100% - 8px),
+    calc(100% - 8px) calc(100% - 12px),
+    calc(100% - 4px) calc(100% - 12px),
+    calc(100% - 4px) calc(100% - 20px),
+    100% calc(100% - 20px),
+    100% 20px,
+    calc(100% - 4px) 20px,
+    calc(100% - 4px) 12px,
+    calc(100% - 8px) 12px,
+    calc(100% - 8px) 8px,
+    calc(100% - 12px) 8px,
+    calc(100% - 12px) 4px,
+    calc(100% - 20px) 4px,
+    calc(100% - 20px) 0px,
+    20px 0px,
+    20px 4px,
+    12px 4px,
+    12px 8px,
+    8px 8px,
+    8px 12px,
+    4px 12px,
+    4px 20px,
+    0px 20px,
+    0px 50%,
+    8px 50%,
+    8px 24px,
+    12px 24px,
+    12px 16px,
+    16px 16px,
+    16px 12px,
+    24px 12px,
+    24px 8px,
+    calc(100% - 24px) 8px,
+    calc(100% - 24px) 12px,
+    calc(100% - 16px) 12px,
+    calc(100% - 16px) 16px,
+    calc(100% - 12px) 16px,
+    calc(100% - 12px) 24px,
+    calc(100% - 8px) 24px,
+    calc(100% - 8px) calc(100% - 24px),
+    calc(100% - 12px) calc(100% - 24px),
+    calc(100% - 12px) calc(100% - 16px),
+    calc(100% - 16px) calc(100% - 16px),
+    calc(100% - 16px) calc(100% - 12px),
+    calc(100% - 24px) calc(100% - 12px),
+    calc(100% - 24px) calc(100% - 8px),
+    24px calc(100% - 8px),
+    24px calc(100% - 12px),
+    16px calc(100% - 12px),
+    16px calc(100% - 16px),
+    12px calc(100% - 16px),
+    12px calc(100% - 24px),
+    8px calc(100% - 24px),
+    8px 50%,
+    0px 50%
+  );
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f45394;
+  display: block;
+  pointer-events: none;
+}
+.pixel-corners::after {
+  margin: -8px;
 }

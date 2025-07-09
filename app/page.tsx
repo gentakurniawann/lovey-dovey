@@ -17,7 +17,7 @@ export default function Home() {
     setAuth();
     saveChatState({
       phase: "welcome",
-      phaseProgress: 'not_started',
+      phaseProgress: "not_started",
       totalQuestions: 8,
       currentQuestion: 0,
       answers: [],
@@ -141,10 +141,10 @@ export default function Home() {
                 className="mb-[-120px]"
               />
               <h1 className="text-4xl text-pink-300 [text-shadow:2px_4px_0_#f45394] text-center rotate-[-7deg] z-[2] relative">
-                Hai
+                Into
               </h1>
-              <h1 className="text-[40px] text-pink-300 [text-shadow:2px_4px_0_#f45394] text-center rotate-[-7deg] mt-[-24px] z-[2] relative mb-6">
-                Ipsum?
+              <h1 className="text-[40px] text-pink-300 [text-shadow:2px_4px_0_#f45394] text-center rotate-[-7deg] -mt-[16px] z-[2] relative mb-6">
+                You
               </h1>
               <button
                 className="w-24 bg-pink-500 shadow-pink-300 shadow h-10 rounded-full hover:bg-pink-600 hover:scale-105 duration-100 cursor-pointer"
