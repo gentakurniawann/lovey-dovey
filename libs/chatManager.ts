@@ -1,7 +1,20 @@
 "use client";
 
-import { QuizState } from "@/types/chat";
+import { ChatMessage, QuizState } from "@/types/chat";
 import Cookies from "js-cookie";
+
+export const setChatHistory = (message: string, type: "bot" | "user") => {
+  const newMessage: ChatMessage = {
+    id: crypto.randomUUID(),
+    type,
+    message,
+    timestamp: Date.now(),
+  };
+  const existing = Cookies.get("chatHistory");
+  const history: ChatMessage[] = existing ? JSON.parse(existing) : [];
+  history.push(newMessage);
+  Cookies.set("chatHistory", JSON.stringify(history), { expires: 7 });
+};
 
 export const saveChatState = (state: QuizState) => {
   try {
