@@ -45,6 +45,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const hasAuth = getAuth();
+      const isOnResult = pathname === "/result";
       const isOnChat = pathname === "/chat";
       const isOnHome = pathname === "/";
 
@@ -54,13 +55,17 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({
         return;
       }
 
-      if (!hasAuth && isOnChat) {
+      if (!hasAuth && (isOnChat || isOnResult)) {
         router.replace("/");
         return;
       }
 
       // If we're on the correct page, stop loading
-      if ((hasAuth && isOnChat) || (!hasAuth && isOnHome)) {
+      if (
+        (hasAuth && isOnChat) ||
+        (hasAuth && isOnResult) ||
+        (!hasAuth && isOnHome)
+      ) {
         setIsLoading(false);
       }
     };

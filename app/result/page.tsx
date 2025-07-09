@@ -1,5 +1,106 @@
 import React from "react";
+import Image from "next/image";
+
+import Button from "@/components/global/button";
 
 export default function ResultPage() {
-  return <div>ResultPage</div>;
+  return (
+    <div className="flex flex-row justify-center items-center min-h-screen m-6 lg:m-16 xl:m-0">
+      <Image
+        src="/images/flower-1.png"
+        alt="flower-1"
+        width={416}
+        height={416}
+        className="fixed top-[-180px] left-[-120px]"
+      />
+      <Image
+        src="/images/love-target.png"
+        alt="flower-1"
+        width={360}
+        height={360}
+        className="fixed bottom-[-120px] left-[-24px]"
+      />
+      <div>
+        <div className="p-6 bg-white w-full xl:w-[1140px] rounded-3xl [box-shadow:2px_4px_10_#f45394] relative z-[2]">
+          <Image
+            src="/images/love-pixel.png"
+            alt="love-pixel"
+            width={216}
+            height={198}
+            className="absolute max-[956px]:w-[20vw] mt-[-60px] ml-[70vw] xl:ml-[960px] rotate-[18deg] z-[2]"
+          />
+          <div className="p-6 w-full h-full border border-slate-900 rounded-2xl">
+            <div className="flex flex-col xl:flex-row gap-12 justify-center items-center w-full h-full">
+              <Image
+                src="/images/result.png"
+                alt="flower-1"
+                width={465}
+                height={416}
+              />
+              <div className="w-full xl:w-[535px]">
+                <h1 className="text-5xl md:text-[80px] text-pink-500 mb-4">
+                  Result
+                </h1>
+                <div className="flex flex-row gap-2 items-center mb-6">
+                  <Image
+                    src="/images/love-pixel.png"
+                    alt="love-pixel"
+                    width={48}
+                    height={40}
+                    className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                  />
+                  <Image
+                    src="/images/love-pixel.png"
+                    alt="love-pixel"
+                    width={48}
+                    height={40}
+                    className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                  />
+                  <Image
+                    src="/images/love-pixel.png"
+                    alt="love-pixel"
+                    width={48}
+                    height={40}
+                    className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                  />
+                  <Image
+                    src="/images/love-pixel.png"
+                    alt="love-pixel"
+                    width={48}
+                    height={40}
+                    className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                  />
+                  <Image
+                    src="/images/love-pixel.png"
+                    alt="love-pixel"
+                    width={48}
+                    height={40}
+                    className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                  />
+                  <span className="font-pixelify text-lg md:text-3xl text-slate-900">
+                    100%
+                  </span>
+                </div>
+                <p className="text-base md:text-lg font-normal text-left text-slate-900 mb-6">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Vivamus in ligula non odio aliquet dictum. Praesent ut dolor
+                  malesuada, sollicitudin est non, laoreet nisl. Cras congue
+                  neque odio, at ultrices ligula semper non. Sed tempus
+                  tincidunt sapien et congue. Orci varius natoque penatibus et
+                  magnis dis parturient montes, nascetur ridiculus mus. Nam
+                  lobortis, lorem et egestas ultricies, erat tortor semper dui,
+                  in lacinia enim massa ac felis. Duis sapien ex, volutpat sed
+                  libero volutpat, maximus auctor mi. Proin commodo arcu vitae
+                  posuere accumsan.
+                </p>
+                <Button className="font-pixelify w-full md:h-16">
+                  Play Again
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
