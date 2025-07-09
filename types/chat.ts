@@ -1,7 +1,6 @@
 export type QuizPhase = "welcome" | "start_quiz" | "questions" | "result";
 
 export interface ChatMessage {
-
   id: string;
   type: "bot" | "user";
   message: string;

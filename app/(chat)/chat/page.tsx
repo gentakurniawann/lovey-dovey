@@ -1,11 +1,6 @@
 "use client";
 import { setCrushName, useRequireAuth } from "@/libs/authManager";
-import Header from "@/components/chat/header";
-import Chat from "@/components/chat/chat";
-import Interaction from "@/components/chat/interaction";
 import { useEffect, useRef, useState } from "react";
-import ChatMessages from "@/components/chat/chat";
-import z from "zod";
 import { saveChatState, loadChatState } from "@/libs/chatManager";
 import { ChatMessage, QuizPhase, QuizReaction, QuizState } from "@/types/chat";
 import { calculateResult, delay, getRandomReaction } from "@/utils/randomQuest";
@@ -18,15 +13,14 @@ import { TypingIndicator } from "@/components/chat/typingIndicator";
 import { ReactionBubble } from "@/components/chat/reactionBubble";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/chat/textInput";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import WelcomeAnimation from "@/public/animations/welcome.json";
 
-type FormValues = {
-  username: string;
-};
+const Player = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function ChatPage() {
   useRequireAuth();
-
-  const { register, handleSubmit } = useForm();
 
   const [state, setState] = useState<QuizState>(() => loadChatState());
 
@@ -75,10 +69,6 @@ export default function ChatPage() {
   };
 
   const addMessage = (message: string, type: "bot" | "user") => {
-    console.log({
-      message,
-      type,
-    });
     const newMessage: ChatMessage = {
       id: `msg_${messageIdRef.current++}`,
       type,
@@ -217,12 +207,20 @@ export default function ChatPage() {
   const renderInput = () => {
     if (state.phase === "welcome" || state.phase === "start_quiz") {
       return (
-        <TextInput
-          value={inputValue}
-          onChange={setInputValue}
-          onSubmit={handleNameSubmit}
-          placeholder="Type their name..."
-        />
+        <div className="flex flex-col">
+          <Player
+            autoplay
+            loop
+            animationData={WelcomeAnimation}
+            style={{ height: "360px" }}
+          />
+          <TextInput
+            value={inputValue}
+            onChange={setInputValue}
+            onSubmit={handleNameSubmit}
+            placeholder="Type their name..."
+          />
+        </div>
       );
     }
     return null;
@@ -270,18 +268,25 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-pink-400 to-pink-600 p-4 text-white">
-        <div className="flex items-center space-x-2">
-          <Heart className="text-pink-100" size={24} />
-          <h1 className="text-xl font-bold">Lovey</h1>
-          <span className="text-sm text-pink-100">• Crush Analyzer</span>
+    <div className="lg:p-[2.5%] grid gap-6 w-screen h-screen grid-rows-[auto_1fr] grid-cols-[2fr_1.2fr]">
+      <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary">
+        <article className="flex gap-2 items-center">
+          <span className="font-chango font-extrabold text-pink-500 text-xl">
+            Lovey
+          </span>
+        </article>
+        <div className="flex items-center gap-2">
+          {/* {[...Array(total)].map((_, index) => ( */}
+          <Image
+            src="/images/love-pix.svg"
+            alt={`love-pixel`}
+            width={36}
+            height={36}
+          />
+          {/* ))} */}
         </div>
-      </div>
-
-      {/* Chat Area */}
-      <div className="h-96 overflow-y-auto p-4 bg-pink-50">
+      </header>
+      <main className="col-span-1 h-full bg-shadow-primary rounded-lg pl-6 pr-8 py-8 flex flex-col gap-4 overflow-y-auto">
         {messages.map((message) => (
           <ChatBubble
             key={message.id}
@@ -292,16 +297,13 @@ export default function ChatPage() {
 
         {isTyping && <TypingIndicator />}
         {currentReaction && <ReactionBubble reaction={currentReaction} />}
-
         <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Area */}
-      <div className="p-4 bg-white border-t">
+      </main>
+      <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words">
         {renderOptions()}
         {renderInput()}
         {renderRestartButton()}
-      </div>
+      </section>
     </div>
   );
 }
