@@ -66,7 +66,7 @@ export default function ResultPage() {
             className="absolute max-[956px]:w-[20vw] mt-[-60px] ml-[70vw] xl:ml-[960px] rotate-[18deg] z-[2]"
           />
           <div className="p-6 w-full h-full border border-slate-900 rounded-2xl">
-            <div className="flex flex-col xl:flex-row gap-12 justify-center items-center w-full h-full">
+            <div className="flex flex-col xl:flex-row gap-6 md:gap-12 justify-center items-center w-full h-full">
               <Image
                 src="/images/result.png"
                 alt="result"
@@ -74,7 +74,7 @@ export default function ResultPage() {
                 height={416}
               />
               <div className="w-full xl:w-[535px]">
-                <h1 className="text-5xl md:text-[80px] text-pink-500 mb-4">
+                <h1 className="text-4xl md:text-[80px] text-pink-500 mb-4">
                   Result
                 </h1>
 
@@ -94,7 +94,7 @@ export default function ResultPage() {
                       alt="love-pixel"
                       width={48}
                       height={40}
-                      className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-4"
+                      className="w-[48px] h-[40px] max-sm:w-6 max-sm:h-5"
                     />
                   ))}
 
@@ -103,11 +103,9 @@ export default function ResultPage() {
                   </span>
                 </div>
 
-                <p className="text-base md:text-lg font-normal text-left text-slate-900 mb-6">
+                <p className="text-sm md:text-base font-normal text-left text-slate-900 mb-6">
                   {resultMessages.map((msg, i) => (
-                    <span key={i} className="block">
-                      {msg}
-                    </span>
+                    <span key={i}>{msg + " "}</span>
                   ))}
                 </p>
                 <div className="flex flex-col lg:flex-row gap-4">
@@ -124,6 +122,7 @@ export default function ResultPage() {
                       alt="love-pix.svg"
                       width={32}
                       height={32}
+                      className="max-md:w-6 max-md:h-6"
                     />
                   </Button>
                   <Button
@@ -140,6 +139,7 @@ export default function ResultPage() {
                       alt="love-pix.svg"
                       width={32}
                       height={32}
+                      className="max-md:w-6 max-md:h-6"
                     />
                   </Button>
                 </div>

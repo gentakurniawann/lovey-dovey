@@ -147,7 +147,14 @@ export default function Home() {
               <Button
                 className="w-24 bg-pink-500 shadow-pink-300 shadow h-10 rounded-full"
                 onClick={redirectToChat}
-              ></Button>
+              >
+                <Image
+                  src={"/icons/icon-play.svg"}
+                  alt="icon-play"
+                  width={20}
+                  height={20}
+                />
+              </Button>
             </div>
             <Image
               src="/images/pointer.png"
