@@ -36,19 +36,13 @@ export default function ChatPage() {
   const {
     state,
     updateState,
-    resetState,
     randomizedQuestions,
     initializeRandomizedQuestions,
     getCurrentQuestion,
   } = useQuizState();
 
-  const {
-    messages,
-    addMessage,
-    loadMessages,
-    clearMessages,
-    isMessageInHistory,
-  } = useMessages();
+  const { messages, addMessage, loadMessages, isMessageInHistory } =
+    useMessages();
   const {
     saveExpectedMessages,
     clearExpectedMessages,
