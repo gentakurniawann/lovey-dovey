@@ -30,7 +30,7 @@ export const ChatBubble = ({
       )}
 
       <div
-        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg text-base font-normal ${
           isBot ? "bg-pink-100 text-pink-900" : "bg-pink-500 text-white"
         }`}
       >
@@ -39,5 +39,3 @@ export const ChatBubble = ({
     </div>
   );
 };
-
-

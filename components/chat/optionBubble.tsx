@@ -1,3 +1,5 @@
+import Button from "../global/button";
+
 export const OptionButton = ({
   option,
   onClick,
@@ -5,10 +7,10 @@ export const OptionButton = ({
   option: { text: string; value: number };
   onClick: () => void;
 }) => (
-  <button
+  <Button
     onClick={onClick}
-    className="w-full p-3 mb-2 text-left bg-white border-2 border-pink-200 rounded-lg hover:border-pink-400 hover:bg-pink-50 transition-colors"
+    className="font-poppins font-semibold text-base !bg-pink-50 w-full p-3 mb-4 text-left rounded-lg"
   >
     {option.text}
-  </button>
+  </Button>
 );

@@ -1,6 +1,10 @@
 "use client";
-import { useRequireAuth } from "@/libs/authManager";
 import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+import { useRequireAuth } from "@/libs/authManager";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   saveChatState,
   loadChatState,
@@ -10,15 +14,15 @@ import {
 import { ChatMessage, QuizPhase, QuizReaction, QuizState } from "@/types/chat";
 import { calculateResult, delay, getRandomReaction } from "@/utils/randomQuest";
 import { QUIZ_DATA, PHASE_CONFIG } from "@/constants/chatConst";
+
 import { OptionButton } from "@/components/chat/optionBubble";
-import { RotateCcw } from "lucide-react";
 import { ChatBubble } from "@/components/chat/chatBubble";
 import { TypingIndicator } from "@/components/chat/typingIndicator";
 import { ReactionBubble } from "@/components/chat/reactionBubble";
 import { TextInput } from "@/components/chat/textInput";
-import Image from "next/image";
-import dynamic from "next/dynamic";
+import { RotateCcw } from "lucide-react";
 import WelcomeAnimation from "@/public/animations/welcome.json";
+import WaitingAnimation from "@/public/animations/waiting.json";
 import { usePreventReload } from "@/components/chat/preventLoading";
 import { nanoid } from "nanoid";
 import { CalculatingModal } from "@/components/chat/calcResult";
@@ -52,6 +56,9 @@ export default function ChatPage() {
     state.phaseProgress === "in_progress";
 
   usePreventReload(shouldBlockReload);
+
+  // Check if the device is mobile
+  const isMobile = useIsMobile();
 
   // Effect to persist quiz state to local storage whenever it changes
   useEffect(() => {
@@ -715,13 +722,17 @@ export default function ChatPage() {
   const renderInput = () => {
     if (state.phase === "welcome" || state.phase === "start_quiz") {
       return (
-        <div className="flex flex-col">
-          <Player
-            autoplay
-            loop
-            animationData={WelcomeAnimation}
-            style={{ height: "360px" }}
-          />
+        <div className="flex flex-col justify-between items-center h-full">
+          {!isMobile && (
+            <div className="overflow-auto h-full mb-2">
+              <Player
+                autoplay
+                loop
+                animationData={WelcomeAnimation}
+                style={{ height: "360px" }}
+              />
+            </div>
+          )}
           <TextInput
             value={inputValue}
             onChange={setInputValue}
@@ -776,8 +787,8 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="lg:p-[2.5%] grid gap-6 w-screen h-screen grid-rows-[auto_1fr] grid-cols-[2fr_1.2fr]">
-      <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary">
+    <div className="p-[2.5%] w-screen max-md:min-h-screen h-screen">
+      <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary mb-6">
         <article className="flex gap-2 items-center">
           <span className="font-chango font-extrabold text-pink-500 text-xl">
             Lovey
@@ -790,23 +801,55 @@ export default function ChatPage() {
             width={36}
             height={36}
           />
+          <Image
+            src="/images/love-pix.svg"
+            alt={`love-pixel`}
+            width={36}
+            height={36}
+          />
+          <Image
+            src="/images/love-pix.svg"
+            alt={`love-pixel`}
+            width={36}
+            height={36}
+          />
         </div>
       </header>
-      <main className="col-span-1 h-full bg-shadow-primary rounded-lg pl-6 pr-8 py-8 flex flex-col gap-4 overflow-y-auto">
-        {messages.map((message) => (
-          <div key={message.id}>
-            <ChatBubble message={message} isBot={message.type === "bot"} />
-            {message.reaction && <ReactionBubble reaction={message.reaction} />}
+      <div className="grid md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-x-6 xl:h-[calc(100vh-9rem)] h-full">
+        <main
+          className={`col-span-2 ${
+            state.phase === "questions" && showOptions
+              ? "max-md:h-64"
+              : "h-full"
+          } bg-shadow-primary rounded-lg pl-6 pr-8 py-8 flex flex-col gap-4 overflow-y-auto w-full`}
+        >
+          <div className="overflow-y-auto h-full w-full">
+            {messages.map((message) => (
+              <div key={message.id}>
+                <ChatBubble message={message} isBot={message.type === "bot"} />
+                {message.reaction && (
+                  <ReactionBubble reaction={message.reaction} />
+                )}
+              </div>
+            ))}
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
           </div>
-        ))}
-        {isTyping && <TypingIndicator />}
-        <div ref={messagesEndRef} />
-      </main>
-      <CalculatingModal isOpen={isCalculating} />
-      <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words">
-        {renderOptions()}
-        {renderInput()}
-      </section>
+        </main>
+        <CalculatingModal isOpen={isCalculating} />
+        <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words w-full">
+          {renderOptions()}
+          {renderInput()}
+          {state.phase === "questions" && !showOptions && (
+            <Player
+              autoplay
+              loop
+              animationData={WaitingAnimation}
+              style={{ height: "360px" }}
+            />
+          )}
+        </section>
+      </div>
     </div>
   );
 }
