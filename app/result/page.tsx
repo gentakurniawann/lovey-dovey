@@ -115,6 +115,12 @@ export default function ResultPage() {
                   }}
                 >
                   Play Again
+                  <Image
+                    src="/images/love-pix.svg"
+                    alt="love-pix.svg"
+                    width={32}
+                    height={32}
+                  />
                 </Button>
               </div>
             </div>
