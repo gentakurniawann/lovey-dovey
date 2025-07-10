@@ -4,7 +4,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useRequireGuest, setAuth } from "@/libs/authManager";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { saveChatState } from "@/libs/chatManager";
+import Button from "@/components/global/button";
 
 export default function Home() {
   // variables
@@ -68,10 +68,17 @@ export default function Home() {
               <h1 className="text-[120px] text-pink-300 [text-shadow:14px_4px_0_#f45394] text-center rotate-[-7deg]  -mt-[75px] z-[2] relative">
                 You?
               </h1>
-              <button
-                className="w-40 bg-pink-500 shadow-pink-300 shadow h-16 rounded-full hover:bg-pink-600 hover:scale-105 duration-100 cursor-pointer"
+              <Button
+                className="w-40 bg-pink-500 shadow-pink-300 shadow h-16 rounded-full"
                 onClick={redirectToChat}
-              ></button>
+              >
+                <Image
+                  src={"/icons/icon-play.svg"}
+                  alt="icon-play"
+                  width={32}
+                  height={32}
+                />
+              </Button>
             </div>
             <Image
               src="/images/pointer.png"
@@ -137,10 +144,10 @@ export default function Home() {
               <h1 className="text-[40px] text-pink-300 [text-shadow:2px_4px_0_#f45394] text-center rotate-[-7deg] -mt-[16px] z-[2] relative mb-6">
                 You?
               </h1>
-              <button
-                className="w-24 bg-pink-500 shadow-pink-300 shadow h-10 rounded-full hover:bg-pink-600 hover:scale-105 duration-100 cursor-pointer"
+              <Button
+                className="w-24 bg-pink-500 shadow-pink-300 shadow h-10 rounded-full"
                 onClick={redirectToChat}
-              ></button>
+              ></Button>
             </div>
             <Image
               src="/images/pointer.png"
