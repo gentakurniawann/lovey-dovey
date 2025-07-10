@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { COOKIE_KEYS } from "@/constants/authConst";
 
 // Cookie for authorization
+
 export const setAuth = () => {
   Cookies.set(COOKIE_KEYS.AUTH, "true", { expires: 7 });
 };
@@ -33,13 +34,43 @@ export const clearCrushName = () => {
 };
 
 // Authorization functions (client-side redirect hooks)
+// export const useRequireAuth = () => {
+//   const router = useRouter();
+//   const pathname = usePathname();
+
+//   useEffect(() => {
+//     if (!getAuth() && pathname !== "/") {
+//       router.push("/");
+//     }
+//   }, [pathname]);
+// };
+
 export const useRequireAuth = () => {
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!getAuth() && pathname !== "/") {
+    const isAuthenticated = getAuth();
+    const hasQuizResult =
+      typeof window !== "undefined" && localStorage.getItem("quiz_result");
+
+    if (hasQuizResult && pathname !== "/result") {
+      router.push("/result");
+    } else if (!isAuthenticated && pathname !== "/") {
       router.push("/");
+    }
+  }, [pathname]);
+};
+
+export const useRequireResult = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const hasResult = localStorage.getItem("quiz_result");
+
+    if (!hasResult && pathname === "/result") {
+      router.push("/chat"); // or "/" depending on your app
     }
   }, [pathname]);
 };
@@ -49,7 +80,12 @@ export const useRequireGuest = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (getAuth() && pathname !== "/chat") {
+    const hasQuizResult =
+      typeof window !== "undefined" && localStorage.getItem("quiz_result");
+
+    if (hasQuizResult && pathname !== "/result") {
+      router.push("/result");
+    } else if (getAuth() && pathname !== "/chat") {
       router.push("/chat");
     }
   }, [pathname]);

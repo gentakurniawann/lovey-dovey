@@ -32,7 +32,7 @@ type QuizOption = {
   value: number;
 };
 
-type QuizQuestion = {
+export type QuizQuestion = {
   id: string;
   question: string;
   options: QuizOption[];

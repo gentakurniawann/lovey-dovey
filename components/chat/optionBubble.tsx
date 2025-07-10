@@ -9,7 +9,7 @@ export const OptionButton = ({
 }) => (
   <Button
     onClick={onClick}
-    className="font-poppins font-semibold text-base !bg-pink-50 w-full p-3 mb-4 text-left rounded-lg"
+    className="font-poppins font-semibold text-sm !bg-pink-50 w-full p-3 mb-4 text-center rounded-lg"
   >
     {option.text}
   </Button>

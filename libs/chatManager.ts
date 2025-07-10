@@ -1,3 +1,4 @@
+import { QUIZ_INIT_STATE } from "@/constants/chatConst";
 import { ChatMessage, QuizState } from "@/types/chat";
 
 const CHAT_STATE_KEY = "lovey_quiz_state";
@@ -21,15 +22,7 @@ export const loadChatState = (): QuizState => {
     console.error("Failed to load chat state from localStorage", error);
   }
   // Default initial state if nothing is saved or an error occurs
-  return {
-    phase: "welcome",
-    phaseProgress: "not_started",
-    currentQuestion: 0,
-    answers: [],
-    crushName: "",
-    totalScore: 0,
-    totalQuestions: 8, // This should ideally be derived from QUIZ_DATA.questions.length
-  };
+  return QUIZ_INIT_STATE;
 };
 
 export const saveChatHistory = (history: ChatMessage[]) => {

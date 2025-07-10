@@ -3,8 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/global/button";
+import { useRequireResult } from "@/libs/authManager";
+import { useQuizState } from "@/hooks/useQuizState";
 
 export default function ResultPage() {
+  useRequireResult();
+
+  const { resetState } = useQuizState();
+
   const [result, setResult] = useState<{
     crushName: string;
     resultMessages: string[];
@@ -23,11 +29,9 @@ export default function ResultPage() {
     }
   }, []);
 
-  if (!result) {
-    return <div className="text-center mt-20 text-xl">Loading result...</div>;
-  }
+  if (!result) return null;
 
-  const { resultMessages, resultType } = result;
+  const { crushName, resultMessages, resultType } = result!;
 
   const resultPercentMap = {
     high: "100%",
@@ -110,7 +114,7 @@ export default function ResultPage() {
                 <Button
                   className="font-pixelify w-full md:h-16"
                   onClick={() => {
-                    localStorage.removeItem("quiz_result");
+                    resetState();
                     window.location.href = "/";
                   }}
                 >
