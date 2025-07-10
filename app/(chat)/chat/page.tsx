@@ -164,6 +164,20 @@ export default function ChatPage() {
     setTimeout(() => startQuiz(), 100);
   };
 
+  useEffect(() => {
+    const recoverPendingMessages = async () => {
+      const raw = localStorage.getItem("pending_bot_messages");
+      const pending: string[] = raw ? JSON.parse(raw) : [];
+
+      if (pending.length > 0) {
+        const currentMessages = loadMessages(); // or from context/state
+        await addBotMessages(pending, currentMessages, true); // or false for instant
+      }
+    };
+
+    recoverPendingMessages();
+  }, [addBotMessages]);
+
   // Auto-scroll effect
   useEffect(() => {
     const timeout = setTimeout(() => {

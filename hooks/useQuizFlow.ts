@@ -1,5 +1,3 @@
-// Update your useQuizFlow hook to use randomized questions
-
 import { useCallback } from "react";
 import { QuizState, QuizQuestion } from "@/types/chat";
 import { QUIZ_INIT_STATE } from "@/constants/chatConst";

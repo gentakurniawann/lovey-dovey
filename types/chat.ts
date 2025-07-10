@@ -8,6 +8,7 @@ export interface ChatMessage {
   message: string; // The actual message content
   timestamp: number;
   reaction?: QuizReaction;
+  delayed?: boolean;
 }
 
 export interface QuizState {
