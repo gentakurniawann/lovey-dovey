@@ -14,7 +14,7 @@ export const QUIZ_INIT_STATE: QuizState = {
   answers: [],
   crushName: "",
   totalScore: 0,
-  totalQuestions: 2,
+  totalQuestions: 8,
 };
 
 const QUIZ_QUESTIONS: QuizQuestion[] = [

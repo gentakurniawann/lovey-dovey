@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useCallback } from "react";
 import { ChatMessage, QuizReaction } from "@/types/chat";
 import { delay } from "@/utils/randomQuest";
@@ -21,12 +20,19 @@ export const useBotMessages = (
       withDelay: boolean = true
     ) => {
       let currentMessages = existingMessages;
+      let remainingMessages = messagesToAdd;
 
-      for (let i = 0; i < messagesToAdd.length; i++) {
-        const message = messagesToAdd[i];
+      try {
+        for (let i = 0; i < messagesToAdd.length; i++) {
+          const message = messagesToAdd[i];
 
-        if (!isMessageInHistory(message, currentMessages)) {
-          try {
+          if (!isMessageInHistory(message, currentMessages)) {
+            remainingMessages = messagesToAdd.slice(i); // save remaining
+            localStorage.setItem(
+              "pending_bot_messages",
+              JSON.stringify(remainingMessages)
+            );
+
             if (withDelay) {
               setIsTyping(true);
               await delay(500 + Math.random() * 1000);
@@ -37,13 +43,17 @@ export const useBotMessages = (
             currentMessages = [...currentMessages, newMessage];
 
             if (withDelay) {
-              await delay(500);
+              await delay(100);
             }
-          } catch (error) {
-            console.error("Error adding message:", error);
-            setIsTyping(false);
           }
         }
+
+        // ✅ Clear only after success
+        localStorage.removeItem("pending_bot_messages");
+      } catch (error) {
+        console.error("Error adding message:", error);
+        setIsTyping(false);
+        // 🟡 Optional: keep pending messages for retry
       }
     },
     [addMessage, isMessageInHistory]

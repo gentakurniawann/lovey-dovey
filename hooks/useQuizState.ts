@@ -1,5 +1,3 @@
-// Update your useQuizState hook to include randomized questions
-
 import { useState, useCallback } from "react";
 import { QuizState, QuizQuestion } from "@/types/chat";
 import { QUIZ_INIT_STATE, QUIZ_DATA } from "@/constants/chatConst";
@@ -52,8 +50,8 @@ export const useQuizState = () => {
     sessionStorage.removeItem("randomized_quiz_data");
 
     // Remove specific cookies (e.g., chat_auth)
-    document.cookie =
-      "chat_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    // document.cookie =
+    //   "chat_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   }, []);
 
   const initializeRandomizedQuestions = useCallback(() => {
