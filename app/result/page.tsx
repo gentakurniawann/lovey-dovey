@@ -31,7 +31,7 @@ export default function ResultPage() {
 
   if (!result) return null;
 
-  const { crushName, resultMessages, resultType } = result!;
+  const { resultMessages, resultType } = result!;
 
   const resultPercentMap = {
     high: "100%",
@@ -110,22 +110,37 @@ export default function ResultPage() {
                     </span>
                   ))}
                 </p>
-
-                <Button
-                  className="font-pixelify w-full md:h-16"
-                  onClick={() => {
-                    resetState();
-                    window.location.href = "/";
-                  }}
-                >
-                  Play Again
-                  <Image
-                    src="/images/love-pix.svg"
-                    alt="love-pix.svg"
-                    width={32}
-                    height={32}
-                  />
-                </Button>
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <Button
+                    className="font-pixelify w-full md:h-16"
+                    onClick={() => {
+                      window.location.href = "/chat";
+                    }}
+                  >
+                    Play Again
+                    <Image
+                      src="/images/love-pix.svg"
+                      alt="love-pix.svg"
+                      width={32}
+                      height={32}
+                    />
+                  </Button>
+                  <Button
+                    className="font-pixelify w-full md:h-16"
+                    onClick={() => {
+                      resetState();
+                      window.location.href = "/";
+                    }}
+                  >
+                    Quit
+                    <Image
+                      src="/images/love-pix.svg"
+                      alt="love-pix.svg"
+                      width={32}
+                      height={32}
+                    />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
