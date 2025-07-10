@@ -518,7 +518,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "giving potential main character energy ngl",
-      memeUrl: "https://media.giphy.com/media/l0MYGb8173drPgj5S/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTZpZ2NreWVlbjJlazFubjRlOW1rbnV0Z21ydG9rcTJqdTY3MnYwbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/DYH297XiCS2Ck/giphy.gif",
       memeAlt: "Considering thoughtfully",
     },
     {
@@ -632,7 +633,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "the audacity is truly impressive",
-      memeUrl: "https://media.giphy.com/media/3o85xIO9I2b8DzTdcI/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnFsaXYzOHhja29seXlrOW02bmIwemRuYno1dmtlYnFqZHJqcnRieiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tPdYQaW6oCIOA/giphy.gif",
       memeAlt: "Slow clap",
     },
     {

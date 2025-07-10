@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/global/button";
-import { useRequireResult } from "@/libs/authManager";
+import { clearSession, useRequireResult } from "@/libs/authManager";
 import { useQuizState } from "@/hooks/useQuizState";
 
 export default function ResultPage() {
@@ -105,7 +105,7 @@ export default function ResultPage() {
 
                 <p className="text-base md:text-lg font-normal text-left text-slate-900 mb-6">
                   {resultMessages.map((msg, i) => (
-                    <span key={i} className="block mb-2">
+                    <span key={i} className="block">
                       {msg}
                     </span>
                   ))}
@@ -114,6 +114,7 @@ export default function ResultPage() {
                   <Button
                     className="font-pixelify w-full md:h-16"
                     onClick={() => {
+                      resetState();
                       window.location.href = "/chat";
                     }}
                   >
@@ -129,6 +130,7 @@ export default function ResultPage() {
                     className="font-pixelify w-full md:h-16"
                     onClick={() => {
                       resetState();
+                      clearSession();
                       window.location.href = "/";
                     }}
                   >

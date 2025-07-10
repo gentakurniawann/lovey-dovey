@@ -17,7 +17,6 @@ export const getAuth = (): boolean => {
 
 export const clearSession = () => {
   Cookies.remove(COOKIE_KEYS.AUTH);
-  Cookies.remove(COOKIE_KEYS.USERNAME);
 };
 
 // Cookie user's crush name
