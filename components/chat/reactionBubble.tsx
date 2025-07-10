@@ -5,7 +5,7 @@ import { QuizReaction } from "@/types/chat";
 
 export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
   return (
-    <div className="flex items-start gap-2 mb-4">
+    <div className="flex items-start gap-2 mb-2 md:mb-4">
       {/* Lovey Icon */}
       <Image
         src="/images/lovey-stand.svg"
@@ -16,7 +16,7 @@ export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
       />
 
       {/* Reaction Content */}
-      <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900">
+      <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900 text-xs md:text-base">
         {reaction.type === "text" && reaction.text}
 
         {reaction.type === "meme" && reaction.memeUrl && (
@@ -32,7 +32,9 @@ export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
         {reaction.type === "both" && (
           <div className="space-y-2">
             {reaction.text && (
-              <div className="text-pink-900">{reaction.text}</div>
+              <p className="text-pink-900 text-xs md:text-base">
+                {reaction.text}
+              </p>
             )}
             {reaction.memeUrl && (
               <Image

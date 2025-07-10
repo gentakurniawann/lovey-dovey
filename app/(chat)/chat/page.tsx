@@ -258,7 +258,7 @@ export default function ChatPage() {
       if (!currentQuestion?.options) return null;
 
       return (
-        <div className="mb-4">
+        <div className="mb-2 md:mb-4">
           {currentQuestion.options.map((option, index) => (
             <OptionButton
               key={index}
@@ -273,43 +273,46 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="p-[2.5%] w-screen max-md:min-h-screen h-screen">
-      <header className="col-span-2 h-fit flex justify-between rounded-lg p-4 bg-shadow-primary mb-6">
+    <div className="p-[2.5%] max-md:pt-0 w-screen max-md:min-h-screen max-md:h-full h-screen">
+      <header className="h-fit flex justify-between md:rounded-lg px-4 py-2 md:p-4 bg-shadow-primary md:mb-6 max-md:fixed z-10 max-md:left-0 max-md:top-0 w-full">
         <article className="flex gap-2 items-center">
           <span className="font-chango font-extrabold text-pink-500 text-xl">
             Lovey
           </span>
         </article>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
           <Image
             src="/images/love-pix.svg"
             alt={`love-pixel`}
             width={36}
             height={36}
+            className="max-md:w-5"
           />
           <Image
             src="/images/love-pix.svg"
             alt={`love-pixel`}
             width={36}
             height={36}
+            className="max-md:w-5"
           />
           <Image
             src="/images/love-pix.svg"
             alt={`love-pixel`}
             width={36}
             height={36}
+            className="max-md:w-5"
           />
         </div>
       </header>
-      <div className="grid md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-x-6 xl:h-[calc(100vh-9rem)] h-full">
+      <div className="grid md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-x-6 md:h-[calc(100vh-9rem)] h-full max-md:mt-14">
         <main
-          className={`col-span-2 ${
-            state.phase === "questions" && showOptions
-              ? "max-md:h-64"
-              : "h-full"
-          } bg-shadow-primary rounded-lg pl-6 pr-8 py-8 flex flex-col gap-4 overflow-y-auto w-full`}
+          className={`col-span-2 h-full bg-shadow-primary rounded-lg px-2.5 py-2.5 md:px-6 md:py-6 flex flex-col justify-between gap-2 w-full md:overflow-y-auto`}
         >
-          <div className="overflow-y-auto h-full w-full">
+          <div
+            className={`overflow-y-auto w-full h-full ${
+              isMobile && "max-h-[520px]"
+            }`}
+          >
             {messages.map((message) => (
               <div key={message.id}>
                 <ChatBubble message={message} isBot={message.type === "bot"} />
@@ -321,20 +324,28 @@ export default function ChatPage() {
             {isTyping && <TypingIndicator />}
             <div ref={messagesEndRef} />
           </div>
+          {isMobile && (
+            <div className="h-fit">
+              {renderOptions()}
+              {renderInput()}
+            </div>
+          )}
         </main>
         <CalculatingModal isOpen={isCalculating} />
-        <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words w-full">
-          {renderOptions()}
-          {renderInput()}
-          {state.phase === "questions" && !showOptions && (
-            <Player
-              autoplay
-              loop
-              animationData={WaitingAnimation}
-              style={{ height: "360px" }}
-            />
-          )}
-        </section>
+        {!isMobile && (
+          <section className="col-span-1 h-full bg-shadow-primary p-8 rounded-lg overflow-auto break-words w-full">
+            {renderOptions()}
+            {renderInput()}
+            {state.phase === "questions" && !showOptions && (
+              <Player
+                autoplay
+                loop
+                animationData={WaitingAnimation}
+                style={{ height: "360px" }}
+              />
+            )}
+          </section>
+        )}
       </div>
     </div>
   );
