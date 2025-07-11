@@ -16,7 +16,7 @@ export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
       />
 
       {/* Reaction Content */}
-      <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900 text-sm md:text-base">
+      <div className="max-w-56 lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900 text-sm md:text-base">
         {reaction.type === "text" && reaction.text}
 
         {reaction.type === "meme" && reaction.memeUrl && (

@@ -286,7 +286,7 @@ export default function ChatPage() {
 
   return (
     <div className="p-[2.5%] w-screen max-md:min-h-screen max-md:h-full h-screen">
-      <header className="h-fit flex justify-between rounded-lg px-4 py-2 md:p-4 bg-shadow-primary mb-6 w-full">
+      <header className="h-fit flex justify-between rounded-lg px-4 py-2 md:p-4 bg-shadow-primary mb-4 md:mb-6 w-full">
         <article className="flex gap-2 items-center">
           <span className="font-chango font-extrabold text-pink-500 text-xl">
             Lovey
@@ -318,7 +318,7 @@ export default function ChatPage() {
       </header>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-y-6 md:gap-x-6 md:h-[calc(100vh-9rem)] h-full">
         <main
-          className={`col-span-2 h-full bg-shadow-primary rounded-lg px-2.5 py-2.5 md:px-6 md:py-6 flex flex-col justify-between gap-2 w-full md:overflow-y-auto`}
+          className={`col-span-2 h-[calc(100vh-2rem)] bg-shadow-primary rounded-lg px-2.5 py-2.5 md:px-6 md:py-6 flex flex-col justify-between gap-2 w-full md:overflow-y-auto`}
         >
           <div
             className={`overflow-y-auto w-full h-full ${
