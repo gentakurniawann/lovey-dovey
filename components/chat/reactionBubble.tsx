@@ -16,7 +16,7 @@ export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
       />
 
       {/* Reaction Content */}
-      <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900 text-xs md:text-base">
+      <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-pink-100 text-pink-900 text-sm md:text-base">
         {reaction.type === "text" && reaction.text}
 
         {reaction.type === "meme" && reaction.memeUrl && (
@@ -32,7 +32,7 @@ export const ReactionBubble = ({ reaction }: { reaction: QuizReaction }) => {
         {reaction.type === "both" && (
           <div className="space-y-2">
             {reaction.text && (
-              <p className="text-pink-900 text-xs md:text-base">
+              <p className="text-pink-900 text-sm md:text-base">
                 {reaction.text}
               </p>
             )}
