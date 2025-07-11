@@ -63,7 +63,7 @@ export default function ResultPage() {
             alt="love-pixel"
             width={216}
             height={198}
-            className="absolute max-[956px]:w-[20vw] mt-[-60px] ml-[70vw] xl:ml-[960px] rotate-[18deg] z-[2]"
+            className="absolute max-[956px]:w-[20vw] mt-[-60px] ml-[62vw] sm:ml-[70vw] xl:ml-[960px] rotate-[18deg] z-[2]"
           />
           <div className="p-6 w-full h-full border border-slate-900 rounded-2xl">
             <div className="flex flex-col xl:flex-row gap-6 md:gap-12 justify-center items-center w-full h-full">
