@@ -421,7 +421,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "no bc why did i just SCREAM",
-      memeUrl: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXd6cmtqNjA1bDlnZ2NpaWNzajR3ZWp6Zmdqazk2MDI4YXE3ZmowbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5GoVLqeAOo6PK/giphy.gif",
       memeAlt: "Screaming in excitement",
     },
     {
@@ -438,19 +439,22 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "the universe said MATCH MADE ✨",
-      memeUrl: "https://media.giphy.com/media/3o7527pa7qs9kCG78A/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHY1dWl4M2s1Zng1MHUxMmxqejlqMXpmbWk0b2N4YXJucmRnbGthOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NXeCNjIbHFlXIt0dTa/giphy.gif",
       memeAlt: "Celebrating with sparkles",
     },
     {
       type: "both",
       text: "okay this is actually perfect",
-      memeUrl: "https://media.giphy.com/media/26FLgGTPUDH6UGAbm/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmRvcTltdXIydDRrcmJxcmI5dzhrcm5ya3BwYjBjbXl3aG9leDlraCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l2Sq5GffrCyUMEXjW/giphy.gif",
       memeAlt: "Nodding approvingly",
     },
     {
       type: "both",
       text: "no bc this just makes sense",
-      memeUrl: "https://media.giphy.com/media/3o85xIO9I2b8DzTdcI/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmo5dndha2RkMXp2cHpnYzVsbHV2OGV0OTBmYjExemxiZm8xcGtsdyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RtrAnlddPOKZRx5Osi/giphy.gif",
       memeAlt: "Clapping",
     },
     {
@@ -460,7 +464,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "the universe said MATCH MADE ✨",
-      memeUrl: "https://media.giphy.com/media/3o7527pa7qs9kCG78A/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2pxOGUycnIwaXhmN3RkcWo3a2hqeW5vNndsaGlkOXIxN3Z6YnRnMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/7eAvzJ0SBBzHy/giphy.gif",
       memeAlt: "Celebrating",
     },
     {
@@ -470,7 +475,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "congratulations you passed the vibe check",
-      memeUrl: "https://media.giphy.com/media/26tknCqiJrBQG6bxC/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2pxOGUycnIwaXhmN3RkcWo3a2hqeW5vNndsaGlkOXIxN3Z6YnRnMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/o75ajIFH0QnQC3nCeD/giphy.gif",
       memeAlt: "Impressed",
     },
   ],
@@ -486,12 +492,6 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "text",
       text: "lowkey invested in this now...",
-    },
-    {
-      type: "both",
-      text: "the math is mathing actually",
-      memeUrl: "https://media.giphy.com/media/DHqth0hVQoIzS/giphy.gif",
-      memeAlt: "Calculating",
     },
     {
       type: "text",
@@ -542,7 +542,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "hmm... are we sure about this?",
-      memeUrl: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTN2endsNjR5a3QwM2cxd3V6YXRka3MzZzY1ajVnaGh6OWw0YnBtNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/11mPvWj3R3mCKA/giphy.gif",
       memeAlt: "Side eye",
     },
     {
@@ -552,7 +553,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "it's giving... experimental",
-      memeUrl: "https://media.giphy.com/media/l46CyJmS9KUbokzsI/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnpzM2hkaDVzdndsMWQxN3Rrc3N5eThocWh6cWttNG9sbTZoZWtzYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FY8c5SKwiNf1EtZKGs/giphy.gif",
       memeAlt: "Uncertain face",
     },
     {
@@ -566,7 +568,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "bless your heart for trying",
-      memeUrl: "https://media.giphy.com/media/65os7odbIW6pa/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWRyMmVuZ2d2cmhqZHR0MDd1MGVtbXhuc29pMjF2aGd3ZWh6eDg5byZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0HlvtIPzPdt2usKs/giphy.gif",
       memeAlt: "Politely moving on",
     },
     {
@@ -576,7 +579,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "so... are we sure about this one?",
-      memeUrl: "https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExem5vaXh2YzdkN2FteDcybnJ2cXhocHR4MzhkZDNjYmJkZnJwZGNkYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ZcbyAZh5x6U92da3LK/giphy.gif",
       memeAlt: "Side eye",
     },
     {
@@ -586,18 +590,16 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "it's giving... experimental era",
-      memeUrl: "https://media.giphy.com/media/l46CyJmS9KUbokzsI/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWRyMmVuZ2d2cmhqZHR0MDd1MGVtbXhuc29pMjF2aGd3ZWh6eDg5byZlcD12MV9naWZzX3NlYXJjaCZjdD1n/7NFUmCZR15pof4YUrz/giphy.gif",
       memeAlt: "Uncertain face",
     },
     {
       type: "both",
       text: "anyway so",
-      memeUrl: "https://media.giphy.com/media/65os7odbIW6pa/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTN2endsNjR5a3QwM2cxd3V6YXRka3MzZzY1ajVnaGh6OWw0YnBtNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/H5C8CevNMbpBqNqFjl/giphy.gif",
       memeAlt: "Moving on",
-    },
-    {
-      type: "text",
-      text: "not this being mid but go off i guess",
     },
     {
       type: "text",
@@ -610,7 +612,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "oh... this is not it 😭",
-      memeUrl: "https://media.giphy.com/media/l4FGGafcOHmrlQxG0/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnB6MDdnZTFqNTUydnBveHAxNmppbG90Znphbmh2a3ZsMHg5NHJ0aiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NvmAEtOSl4M4Qb9nFN/giphy.gif",
       memeAlt: "Cringing",
     },
     {
@@ -619,14 +622,9 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     },
     {
       type: "both",
-      text: "the secondhand embarrassment is real",
-      memeUrl: "https://media.giphy.com/media/26gsjCZpPolPr3sBy/giphy.gif",
-      memeAlt: "Facepalm",
-    },
-    {
-      type: "both",
       text: "this ain't it... this is NOT it",
-      memeUrl: "https://media.giphy.com/media/3o7527LvROwYIQW7YY/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bWJhMHZhYjkzcGtqaWk2YWd3MWQ0b256dmpwenZsdzI4ZWZ2NTQ4eCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gMDKyrWInxOhO/giphy.gif",
       memeAlt: "Shaking head no",
     },
     {
@@ -647,13 +645,15 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "gravity called, it wants its L back",
-      memeUrl: "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OHMxcXQ5N2xyZjVveGprN3ZiYjZjYW5hYXpscXlxdGNvY2dlN3lpbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FyzLrrPloeaZEFCNMR/giphy.gif",
       memeAlt: "Disappointed",
     },
     {
       type: "both",
       text: "PLEASEEE not this combination 😭",
-      memeUrl: "https://media.giphy.com/media/l4FGGafcOHmrlQxG0/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWtlMXpsaDUyYmNwbXJncHk4amdrc2d4dmRpY3g0dHM3b2ZhZjloZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JQmAC35OvhFygbRPWk/giphy.giff",
       memeAlt: "Cringing hard",
     },
     {
@@ -663,7 +663,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "the secondhand embarrassment is REAL",
-      memeUrl: "https://media.giphy.com/media/26gsjCZpPolPr3sBy/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWtlMXpsaDUyYmNwbXJncHk4amdrc2d4dmRpY3g0dHM3b2ZhZjloZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/t6mUoVon42mT1IdftF/giphy.gif",
       memeAlt: "Facepalm",
     },
     {
@@ -680,7 +681,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "the way i just GASPED... and not in a good way",
-      memeUrl: "https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWtlMXpsaDUyYmNwbXJncHk4amdrc2d4dmRpY3g0dHM3b2ZhZjloZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/bYcXV2lFFI2LrjLrdF/giphy.gif",
       memeAlt: "Shocked and disappointed",
     },
   ],
