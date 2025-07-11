@@ -57,6 +57,7 @@ export default function ChatPage() {
   const [showOptions, setShowOptions] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const endOptionInputRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
   const shouldBlockReload =
@@ -186,6 +187,17 @@ export default function ChatPage() {
     return () => clearTimeout(timeout);
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    if (showOptions) {
+      if (isMobile) {
+        const timeout = setTimeout(() => {
+          endOptionInputRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 200);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [showOptions]);
+
   // Properly manage showOptions state based on quiz state
   useEffect(() => {
     if (state.phase === "questions" && state.phaseProgress === "in_progress") {
@@ -310,7 +322,7 @@ export default function ChatPage() {
         >
           <div
             className={`overflow-y-auto w-full h-full ${
-              isMobile && "max-h-[520px]"
+              isMobile && "max-h-[720px]"
             }`}
           >
             {messages.map((message) => (
@@ -328,6 +340,7 @@ export default function ChatPage() {
             <div className="h-fit">
               {renderOptions()}
               {renderInput()}
+              <div ref={endOptionInputRef} />
             </div>
           )}
         </main>

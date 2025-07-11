@@ -414,7 +414,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "THIS IS IT.",
-      memeUrl: "https://media.giphy.com/media/26FLgGTPUDH6UGAbm/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTg5Y3o2c3FjdjA4b3d4a2M0bGVtdHRraXM3ejY2YTNueWlmdGprNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/qRd64Rf1nqaWc/giphy.gif",
       memeAlt: "Beyonce nodding approvingly",
     },
     {
@@ -426,7 +427,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "y'all are genuinely iconic idc idc",
-      memeUrl: "https://media.giphy.com/media/3o85xIO9I2b8DzTdcI/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGU1d3ZsMDYycDhiZGJ3YnB5Y2FrcjYyNG16cjU0azJmbmEzbmphbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/co5Iboa0dZrR7OXivh/giphy.gif",
       memeAlt: "Clapping enthusiastically",
     },
     {
@@ -502,13 +504,14 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "i'm cautiously optimistic about this chaos",
-      memeUrl: "https://media.giphy.com/media/l0MYGb8173drPgj5S/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHlmdmU4MjY5ZWprY29yZzR2c3pzNW4yamVndG00cG1sa3hnaXRwOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kaEPzm3xgCf1SpURYw/giphy.gif",
       memeAlt: "Considering thoughtfully",
     },
     {
       type: "both",
       text: "okay wait... this might actually serve",
-      memeUrl: "https://media.giphy.com/media/3o7527ehSNAvMYfzPi/giphy.gif",
+      memeUrl: "https://media.giphy.com/media/wLK6lCNLfMGDxBgCzh/giphy.gif",
       memeAlt: "Intrigued expression",
     },
     {
@@ -666,7 +669,8 @@ export const QUESTION_REACTION: { [key: number]: QuizReaction[] } = {
     {
       type: "both",
       text: "this ain't it chief... this is NOT it",
-      memeUrl: "https://media.giphy.com/media/3o7527LvROwYIQW7YY/giphy.gif",
+      memeUrl:
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2xkMjlhczQ4NGQ4ZTUyY294dWx3emVvMGd4cndnYWlpdmR1ZmptMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gGeyr3WepujbGn7khx/giphy.gif",
       memeAlt: "Shaking head no",
     },
     {
