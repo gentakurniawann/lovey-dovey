@@ -68,7 +68,7 @@ export default function ChatPage() {
     async (finalScore: number) => {
       updateState({ phase: "result", phaseProgress: "in_progress" });
       setIsCalculating(true);
-      await delay(600);
+      await delay(2000); // Simulate a delay for the calculation
 
       const resultType = calculateResult(
         finalScore,
