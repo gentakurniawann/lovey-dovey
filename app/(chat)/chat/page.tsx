@@ -192,6 +192,7 @@ export default function ChatPage() {
       if (isMobile) {
         const timeout = setTimeout(() => {
           endOptionInputRef.current?.scrollIntoView({ behavior: "smooth" });
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 200);
         return () => clearTimeout(timeout);
       }
